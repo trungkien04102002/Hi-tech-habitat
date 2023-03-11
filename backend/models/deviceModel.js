@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var Device = new Schema({
+var deviceModel = new Schema({
     type: {
         type: String,
         required: true

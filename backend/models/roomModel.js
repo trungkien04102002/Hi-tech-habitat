@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var Room = new Schema({
+var roomModel = new Schema({
     name: {
         type: String,
         required: true
