@@ -9,8 +9,8 @@ var deviceModel = new Schema({
         type: String,
         required: true
     },
-    dateAdded: {
-        type: Date,
+    feed: {
+        type: String,
         required: true
     },
     deviceRecord: [{
@@ -27,6 +27,12 @@ var deviceModel = new Schema({
         type: Schema.Types.ObjectId,
         required: true,
         ref: 'Room'
+    }
+},
+{
+    timestamps: {
+        createdAt: true, 
+        updatedAt: false
     }
 });
 

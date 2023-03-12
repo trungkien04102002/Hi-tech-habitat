@@ -9,6 +9,10 @@ var sensorModel = new Schema({
         type: String,
         required: true
     },
+    feed: {
+        type: String,
+        required: true
+    },
     sensorRecord: [{
         value: {
             type: Number,
@@ -23,6 +27,12 @@ var sensorModel = new Schema({
         type: Schema.Types.ObjectId,
         required: true,
         ref: 'Room'
+    }
+},
+{
+    timestamps: {
+        createdAt: true, 
+        updatedAt: false
     }
 });
 
