@@ -13,16 +13,19 @@ var deviceModel = new Schema({
         type: String,
         required: true
     },
-    deviceRecord: [{
-        state: {
-            type: Boolean,
-            required: true
-        },
-        time: {
-            type: Date,
-            required: true
-        }
-    }],
+    deviceRecord: {
+        type: [{
+            state: {
+                type: Number,
+                required: true
+            },
+            time: {
+                type: Date,
+                required: true
+            }
+        }],
+        default: []
+    },
     room: {
         type: Schema.Types.ObjectId,
         required: true,

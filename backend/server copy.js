@@ -62,27 +62,12 @@ client.on('connect', function() {
 // client.publish('<username>/feeds/<feed_key>', 'Hello, Adafruit!');
 const Device = require('./models/deviceModel');
 const Sensor = require('./models/sensorModel');
-client.on('message', async function(topic, message) {
+client.on('message', function(topic, message) {
     console.log('Received topic:', topic.toString());
     console.log('Received message:', message.toString());
     global.io.in(topic.toString()).emit(topic.toString(), message.toString());
-    let feed = topic.toString().substring(`${process.env.ADA_USERNAME}/feeds/`.length)
-    await Device.updateMany({feed},{
-        $push: {
-          deviceRecord: {
-                state: Number(message),
-                time: new Date()
-          }
-        }
-    })
-    await Sensor.updateMany({feed},{
-        $push: {
-          sensorRecord: {
-                value: Number(message),
-                time: new Date()
-          }
-        }
-    })
+    let feedName = topic.toString().substring(`${process.env.ADA_USERNAME}/feeds/`.length-1)
+    console.log(feedName);
     // Device.
 });
 
