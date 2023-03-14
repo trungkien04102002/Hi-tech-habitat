@@ -1,4 +1,4 @@
-const User = require('../models/roomModel');
+const Device = require('../models/deviceModel');
 
 
 const asyncHandler = require('express-async-handler')

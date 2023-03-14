@@ -5,10 +5,10 @@ const authMiddlewares = require('../middlewares/authMiddlewares');
 
 
 router.route('/:id').all(authMiddlewares.protect).get(roomController.getOneRoom)
-                                                .patch(roomController.updateOneRoom)
-                                                .delete(roomController.deleteOneRoom)
+    .patch(roomController.updateOneRoom)
+    .delete(roomController.deleteOneRoom)
 router.route('/').all(authMiddlewares.protect).get(roomController.getRoomsOfUser)
-                                            .post(roomController.addRoom)
+    .post(roomController.addRoom)
 
 
 
