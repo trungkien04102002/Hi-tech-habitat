@@ -28,13 +28,18 @@ class RoomController {
     updateOneRoom = asyncHandler(async(req, res) => {
         var room = await Room.findById(req.params.id);
         if (room) {
-            var newRoom = await Room.findOneAndUpdate({ _id: req.params.id }, {
-                name: (req.body.name || room.roomType),
-                roomType: (req.body.roomType || room.roomType)
-            }, {
-                new: true
-            });
-            res.json(newRoom)
+            if (room.user == req.user._id) {
+                var newRoom = await Room.findOneAndUpdate({ _id: req.params.id }, {
+                    name: (req.body.name || room.roomType),
+                    roomType: (req.body.roomType || room.roomType)
+                }, {
+                    new: true
+                });
+                res.json(newRoom)
+            } else {
+                res.status(401)
+                throw new Error("You don't have permit to update this room!")
+            }
         } else {
             res.status(404)
             throw new Error('Room does not exist')
@@ -43,10 +48,17 @@ class RoomController {
 
     //  [DELETE - ROUTE: api/room/:id]  
     deleteOneRoom = asyncHandler(async(req, res) => {
-        var room = await Room.findById(req.params.id);
+        var room = await Room.findById({
+            _id: req.params.id
+        });
         if (room) {
-            await Room.deleteOne({ _id: req.params.id });
-            res.json({ room, message: "Room is deleted!" });
+            if (room.user == req.user._id) {
+                await Room.deleteOne({ _id: req.params.id });
+                res.json({ room, message: "Room is deleted!" });
+            } else {
+                res.status(401)
+                throw new Error("You don't have permit to delete this room!")
+            }
         } else {
             res.status(404);
             throw new Error('Room does not exist!');
@@ -57,18 +69,28 @@ class RoomController {
     addRoom = asyncHandler(async(req, res) => {
         const user = req.user._id;
         const { name, roomType } = req.body;
-        var newRoom = await Room.create({
+        const roomCheck = await Room.findOne({
             name,
-            roomType,
             user
-        })
-        if (newRoom) {
-            await newRoom.save();
-            res.json(newRoom);
+        });
+        if (!roomCheck) {
+            var newRoom = await Room.create({
+                name,
+                roomType,
+                user
+            })
+            if (newRoom) {
+                await newRoom.save();
+                res.json(newRoom);
+            } else {
+                res.status(404);
+                throw new Error("Invalid data");
+            }
         } else {
             res.status(404);
-            throw new Error("Invalid data");
+            throw new Error('Please enter another name!');
         }
+
     })
 }
 
