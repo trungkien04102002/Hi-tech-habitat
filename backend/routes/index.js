@@ -5,7 +5,7 @@ const sensorRouter = require('./sensorRoutes');
 const statisticRouter = require('./statisticRoutes');
 
 
-function routes(app){
+function routes(app) {
     app.use('/api/user', userRouter);
     app.use('/api/room', roomRouter);
     app.use('/api/device', deviceRouter);

@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var sensorModel = new Schema({
-    typeOfSensor: {
+    type: {
         type: String,
         required: true
     },
@@ -31,10 +31,9 @@ var sensorModel = new Schema({
         required: true,
         ref: 'Room'
     }
-},
-{
+}, {
     timestamps: {
-        createdAt: true, 
+        createdAt: true,
         updatedAt: false
     }
 });

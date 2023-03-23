@@ -17,4 +17,17 @@ var roomModel = new Schema({
     }
 });
 
+roomModel.virtual('devices', {
+    ref: 'Device',
+    localField: '_id',
+    foreignField: 'device'
+})
+
+roomModel.virtual('sensors', {
+    ref: 'Sensor',
+    localField: '_id',
+    foreignField: 'sensor'
+})
+
+
 module.exports = mongoose.model('Room', roomModel);

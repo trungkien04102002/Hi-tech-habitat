@@ -1,11 +1,11 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var deviceModel = new Schema({
-    type: {
+    name: {
         type: String,
         required: true
     },
-    name: {
+    type: {
         type: String,
         required: true
     },
@@ -31,10 +31,9 @@ var deviceModel = new Schema({
         required: true,
         ref: 'Room'
     }
-},
-{
+}, {
     timestamps: {
-        createdAt: true, 
+        createdAt: true,
         updatedAt: false
     }
 });

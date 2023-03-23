@@ -19,15 +19,20 @@ var userModel = new Schema({
         type: String,
         required: true
     }
-},
-{
+}, {
     timestamps: {
-        createdAt: true, 
+        createdAt: true,
         updatedAt: false
     }
 });
-userModel.methods.matchPassword = async function (enteredPassword) {
+userModel.methods.matchPassword = async function(enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 };
-  
+
+// userModel.virtual('rooms', {
+//     ref: 'Room',
+//     localField: '_id',
+//     foreignField: 'user'
+// })
+
 module.exports = mongoose.model('User', userModel);
