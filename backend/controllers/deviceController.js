@@ -144,6 +144,46 @@ class DeviceController {
             }
         }
     })
+
+
+    // [ POST - ROUTE: api/device/state/:id ] 
+    addStateDevice = asyncHandler(async(req, res) => {
+        const { on } = req.body;
+
+        var device = await Device.findById(req.params.id);
+        if (!device) {
+            res.status(404)
+            throw new Error("Device does not exist!")
+        } 
+        var room = await Room.findOne({_id: device.room})
+
+        if (room.user.toString() != req.user._id) {
+            res.status(401)
+            throw new Error("You don't have permit to update this devices!")
+        }
+        const aioKey = process.env.ADA_KEY;
+        const aioUsername = process.env.ADA_USERNAME;
+        const feedKey = device.feed;
+      
+        const url = `https://io.adafruit.com/api/v2/${aioUsername}/feeds/${feedKey}/data`;
+
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-AIO-Key': aioKey,
+            },
+            body: JSON.stringify({ value: on ? '1' : '0' }),
+        };
+    
+        const response = await request(url, options);
+    
+        console.log(response);
+        res.status(200).json({msg:`Light turned ${on ? 'on' : 'off'}`});
+    
+        
+        
+    })
 }
 
 
