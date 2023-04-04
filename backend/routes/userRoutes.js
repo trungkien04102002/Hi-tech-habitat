@@ -5,9 +5,9 @@ const authMiddlewares = require('../middlewares/authMiddlewares');
 
 router.post('/register', userController.registerUser);
 router.post('/auth', userController.authUser);
-router.patch('/update', authMiddlewares.protect, userController.updateUser);
-router.get('/', authMiddlewares.protect, userController.getUserProfile);
 
+router.get('/', authMiddlewares.protect, userController.getUserProfile)
+        .patch('/', authMiddlewares.protect, userController.updateUser);
 
 
 module.exports = router;
