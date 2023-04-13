@@ -1,7 +1,8 @@
-import {View, Text, Image, ScrollView, Modal, Pressable, TextInput, ImageBackground} from 'react-native';
+import {View, Text, Image, ScrollView, Modal, Pressable, TextInput, ImageBackground, TouchableOpacity} from 'react-native';
 import { StyledComponent } from "nativewind";
 import React, { useState } from 'react';
 import { BlurView } from 'expo-blur';
+import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 
 import BackGround from '../components/background';
 import RoomHeader from '../components/roomheader';
@@ -81,6 +82,19 @@ const Room = ({ route }) => {
   const { id } = route.params
 
   const [modalVisible, setModalVisible] = useState(false);
+
+  const renderRightButtons = () => {
+    return (
+      <View className='flex flex-row rounded-r-lg bg-[#12BEF6]'>
+        <TouchableOpacity>
+          <Image className="object-cover scale-[0.8]" source={require('../img/infoIcon.png')}></Image>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Image className="object-cover scale-[0.8]" source={require('../img/trashIcon.png')}></Image>
+        </TouchableOpacity>
+      </View>
+    );
+  };
 
   return (
     <BackGround>
@@ -181,25 +195,31 @@ const Room = ({ route }) => {
 
           </View>
 
-          <View className='h-[45%]'>
+          <View className='h-[45%] w-full'>
             <Text className="text-[#414141] font-medium opacity-80 text-base px-6 pb-4">All devices ({Rooms[id].device.length})</Text>
             
-            <ScrollView className="px-4">
-              <View className='flex items-center gap-4 mb-6'>
+            <ScrollView>
+              <View className='flex items-center gap-4 mb-6 mx-4'>
                 {Rooms[id].device.map((item, index) => (
-                  <Pressable
-                    className='flex flex-row justify-between items-center w-[92%] border border-[#12BEF6] border-2 rounded-xl bg-white py-2 px-6'
+                  <View 
+                    className='w-full border border-[#12BEF6] border-2 rounded-xl bg-white'
                     key={index}
                     style={styles.shadow}
                   >
-                    <View className='flex flex-row items-center'>
-                      <Image source={fanIcon}></Image>
-                      <Text className='text-[#414141] font-medium opacity-80 text-base tracking-wider px-2'>{item}</Text>
-                    </View>
+                    <GestureHandlerRootView>
+                      <Swipeable renderRightActions={renderRightButtons}>
+                        <View className='flex flex-row justify-between items-center px-6 py-2'>
+                          <View className='flex flex-row items-center'>
+                            <Image source={fanIcon}></Image>
+                            <Text className='text-[#414141] font-medium opacity-80 text-base tracking-wider px-2'>{item}</Text>
+                          </View>
 
-                    <Image source={rightArrow}></Image>
+                          <Image className='rotate-180' source={rightArrow}></Image>
+                        </View>
+                      </Swipeable>
+                    </GestureHandlerRootView>
+                  </View>
 
-                  </Pressable>
                 ))}
               </View>
             </ScrollView>
