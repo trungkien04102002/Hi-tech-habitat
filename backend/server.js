@@ -6,12 +6,12 @@ const mqtt = require('mqtt');
 const db = require('./config/db');
 const routes = require('./routes');
 const http = require('http');
-const port = process.env.PORT || 3000;
 const errorHandleMiddlewares = require('./middlewares/errorHandleMiddlewares');
 const WebSockets = require("./utils/WebSockets");
 
 // Env variables
 require("dotenv").config();
+const port = process.env.PORT || 3000;
 
 // Connect to DB
 db.connect();
