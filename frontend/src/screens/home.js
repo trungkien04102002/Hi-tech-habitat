@@ -9,14 +9,10 @@ import bedRoom from '../img/bedRoom.png';
 import livingRoom from '../img/livingRoom.png';
 import kitchen from '../img/kitchen.png';
 import studioRoom from '../img/studioRoom.png';
-<<<<<<< HEAD
-
-=======
 import energy from '../img/energy.png'
 import energybg from '../img/energybg.png'
 import temperatureIcon from '../img/temperatureIcon.png'
 import temperaturebg from '../img/temperaturebg.png'
->>>>>>> 6ccdb88d25c92078af411c8de7c628ba47716f51
 
 import styles from '../style'
 
