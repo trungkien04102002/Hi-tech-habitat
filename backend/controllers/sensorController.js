@@ -125,7 +125,7 @@ class SensorController {
         }
     })
 
-    //  [DELETE - ROUTE: api/room/:id] 
+    //  [DELETE - ROUTE: api/sensor/:id] 
     deleteSensor = asyncHandler(async(req, res) => {
         var sensor = await sensor.findById({
             _id: req.params.id
