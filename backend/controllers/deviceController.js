@@ -1,6 +1,7 @@
 const Device = require('../models/deviceModel');
 const Room = require('../models/roomModel');
 var mongoose = require('mongoose');
+const https = require('https');
 
 
 const asyncHandler = require('express-async-handler')
@@ -11,7 +12,7 @@ class DeviceController {
     getDevice = asyncHandler(async(req, res) => {
         var room = await Room.findOne({
             user: req.user._id
-        });
+        })
         var device = await Device.findById(req.params.id);
         if (!device) {
             res.status(404)
@@ -150,11 +151,13 @@ class DeviceController {
     addStateDevice = asyncHandler(async(req, res) => {
         const { on } = req.body;
 
+
         var device = await Device.findById(req.params.id);
         if (!device) {
             res.status(404)
             throw new Error("Device does not exist!")
         } 
+
         var room = await Room.findOne({_id: device.room})
 
         if (room.user.toString() != req.user._id) {
@@ -165,23 +168,43 @@ class DeviceController {
         const aioUsername = process.env.ADA_USERNAME;
         const feedKey = device.feed;
       
-        const url = `https://io.adafruit.com/api/v2/${aioUsername}/feeds/${feedKey}/data`;
 
+        const postData = JSON.stringify({ value: Number(on)==1 ? 1 : 0 });
+          
         const options = {
+            hostname: 'io.adafruit.com',
+            port: 443,
+            path: `/api/v2/${aioUsername}/feeds/${feedKey}/data`,
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
                 'X-AIO-Key': aioKey,
-            },
-            body: JSON.stringify({ value: on ? '1' : '0' }),
+                'Content-Type': 'application/json',
+                'Content-Length': postData.length
+            }
         };
-    
-        const response = await request(url, options);
-    
-        console.log(response);
-        res.status(200).json({msg:`Light turned ${on ? 'on' : 'off'}`});
-    
-        
+
+        const request = https.request(options, res => {
+            console.log(`statusCode: ${res.statusCode}`);
+          
+        });
+        request.on('error', error => {
+            console.error(error);
+            res.status(300)
+            throw new Error("Cannot make request to adafruit")
+        });
+        request.write(postData);
+        request.end();
+        res.status(200).json({msg:`Light turned ${Number(on) == 1 ? 'on' : 'off'}`});
+
+        // await Device.updateMany({ feed:feedKey }, {
+        //     $push: {
+        //         deviceRecord: {
+        //             state: Number(on),
+        //             time: new Date()
+        //         }
+        //     }
+        // })
+
         
     })
 }
