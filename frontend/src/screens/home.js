@@ -14,6 +14,9 @@ import energybg from '../img/energybg.png'
 import temperatureIcon from '../img/temperatureIcon.png'
 import temperaturebg from '../img/temperaturebg.png'
 
+import {getRoom} from '../api/roomApi'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import styles from '../style'
 
 const Rooms = [
@@ -62,6 +65,16 @@ const Rooms = [
 ]
 
 const Home = ({ navigation }) => {
+    useEffect (() => {
+        (async () => {
+            const token = await AsyncStorage.getItem('user')
+            // console.log(token)
+            const res = await getRoom(token)
+
+            console.log(res) 
+        })()
+    }, [])
+
     const [position] = useState(new Animated.Value(-10));
     const [scale] = useState(new Animated.Value(0.9));
     const [visible, setVisible] = useState(true);
