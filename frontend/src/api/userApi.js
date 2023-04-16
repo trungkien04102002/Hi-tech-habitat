@@ -10,7 +10,7 @@ export const signIn = async(formValue) => {
       // make axios post request
       const res = await axios({
         method: "post",
-        url: "http://192.168.1.56:5000/api/user/auth",
+        url: "http://10.0.147.233:5000/api/user/auth",
         data: formValue,
         headers: { 
             Accept: 'application/json',
@@ -32,7 +32,7 @@ export const signUp = async(formValue) => {
     // make axios post request
     const res = await axios({
       method: "post",
-      url: "http://192.168.1.56:5000/api/user/register",
+      url: "http://10.0.147.233:5000/api/user/register",
       data: formValue,
       headers: { 
           Accept: 'application/json',
@@ -40,7 +40,7 @@ export const signUp = async(formValue) => {
     });
     await AsyncStorage.setItem('user', res.data.token);
     return res.data;
-  } catch(error) {
-      return error.response.data;
-  }
+    } catch(error) {
+        return error.response.data;
+    }
 }

@@ -8,7 +8,7 @@ import setting from '../img/settingRound.png'
 import account from '../img/account.png'
 
 import Footer from '../components/footer';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../style'
 
 const Profile = ({ navigation }) => {
@@ -62,7 +62,7 @@ const Profile = ({ navigation }) => {
                         <Pressable 
                             style={styles.shadow} 
                             className="bg-[#4682B4] rounded-2xl w-fit items-center mx-32 py-2 mt-6"
-                            onPress={() => navigation.navigate('SignIn')}
+                            onPress={() => {AsyncStorage.removeItem('user'); navigation.navigate('SignIn')}}
                         >
                             <Text className="text-xl font-bold text-white py-1">Log out</Text>
                         </Pressable>

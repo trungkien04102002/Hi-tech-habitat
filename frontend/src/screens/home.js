@@ -14,66 +14,85 @@ import energybg from '../img/energybg.png'
 import temperatureIcon from '../img/temperatureIcon.png'
 import temperaturebg from '../img/temperaturebg.png'
 
-import {getRoom} from '../api/roomApi'
+import {getRoom,getRoomDetail} from '../api/roomApi'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import styles from '../style'
 
-const Rooms = [
-    {
-        name: 'Living room',
-        img: livingRoom,
-        numOfDevices: 4,
-        temperature: 20,
-    },
-    {
-        name: 'Kitchen',
-        img: kitchen,
-        numOfDevices: 24,
-        temperature: 20
-    },
-    {
-        name: 'Bed room',
-        img: bedRoom,
-        numOfDevices: 1,
-        temperature: 20
-    },
-    {
-        name: 'Studio room',
-        img: studioRoom,
-        numOfDevices: 1,
-        temperature: 20
-    },
-    {
-        name: 'Studio room',
-        img: studioRoom,
-        numOfDevices: 1,
-        temperature: 20
-    },
-    {
-        name: 'Studio room',
-        img: studioRoom,
-        numOfDevices: 1,
-        temperature: 20
-    },
-    {
-        name: 'Studio room',
-        img: studioRoom,
-        numOfDevices: 1,
-        temperature: 20
-    }
-]
+// const Rooms = [
+//     {
+//         name: 'Living Room',
+//         img: livingRoom,
+//         numOfDevices: 4,
+//         temperature: 20,
+//     },
+//     {
+//         name: 'Kitchen',
+//         img: kitchen,
+//         numOfDevices: 24,
+//         temperature: 20
+//     },
+//     {
+//         name: 'Bed room',
+//         img: bedRoom,
+//         numOfDevices: 1,
+//         temperature: 20
+//     },
+//     {
+//         name: 'Studio room',
+//         img: studioRoom,
+//         numOfDevices: 1,
+//         temperature: 20
+//     },
+//     {
+//         name: 'Studio room',
+//         img: studioRoom,
+//         numOfDevices: 1,
+//         temperature: 20
+//     },
+//     {
+//         name: 'Studio room',
+//         img: studioRoom,
+//         numOfDevices: 1,
+//         temperature: 20
+//     },
+//     {
+//         name: 'Studio room',
+//         img: studioRoom,
+//         numOfDevices: 1,
+//         temperature: 20
+//     }
+// ]
 
 const Home = ({ navigation }) => {
+    const [Rooms,setRooms] = useState([])
     useEffect (() => {
         (async () => {
             const token = await AsyncStorage.getItem('user')
             // console.log(token)
             const res = await getRoom(token)
-
-            console.log(res) 
+            setRooms(res)
+            // console.log(res) 
         })()
     }, [])
+
+    function getNumofDevices(id) {
+        num =0;
+        (async () => {
+            const token = await AsyncStorage.getItem('user')
+            // console.log(token)
+            const res = await getRoomDetail(token,id)
+            // console.log(res.room.name)
+            num = res.roomDevices.length
+        })()
+        return num
+    }
+
+    function genImg(){
+       const imgList = [bedRoom,kitchen,livingRoom,studioRoom]
+       const num = Math.floor(Math.random() * 4)
+       return imgList[num]
+    }
 
     const [position] = useState(new Animated.Value(-10));
     const [scale] = useState(new Animated.Value(0.9));
@@ -120,7 +139,8 @@ const Home = ({ navigation }) => {
             
                 <StyledComponent component={View} className="items-center h-full w-full pt-12 px-2">
                     <Header id={0} />
-
+                    
+                    {/* slider */}
                     <View className='rounded-2xl bg-[#D4E9EE] w-[92%] mt-6 h-[180]' style={styles.innerShadow}>
                         <Swiper>
                             <View>
@@ -167,6 +187,8 @@ const Home = ({ navigation }) => {
                         </View>
                         
                     </View>
+
+                    {/* room */}
                     <ScrollView className="h-full mb-6">
                         <View className='flex flex-wrap flex-row grid-cols-2 gap-4 items-center mx-auto mt-2'>
                             {Rooms.map((item, index) => ( 
@@ -174,12 +196,12 @@ const Home = ({ navigation }) => {
                                     className='border border-2 border-[#12BEF6] rounded-xl py-4 px-5 bg-white w-[45%]' 
                                     key={index} 
                                     style={styles.shadow}
-                                    onPress={() => navigation.push('Room', {id: index})}
+                                    onPress={() => navigation.push('Room', {id: item._id})}
                                 >
-                                    <Image source={item.img}></Image>
+                                    <Image source={genImg()}></Image>
                                     <Text className='text-[#3D3D3D] font-bold text-lg py-2'>{item.name}</Text>
-                                    <Text className='text-[#7D7D7D] pb-2'>{item.numOfDevices} devices</Text>
-                                    <Text className='text-[#7D7D7D] pb-8'>Temperature: {item.temperature} °C</Text>
+                                    <Text className='text-[#7D7D7D] pb-2'>{getNumofDevices(item._id) + ' devices'} </Text>
+                                    <Text className='text-[#7D7D7D] pb-8'>Temperature: 20 °C</Text>
                                 </Pressable>
                             ))}
                         </View> 

@@ -1,6 +1,6 @@
 import {View, Text, Image, ScrollView, Modal, Pressable, TextInput, ImageBackground, TouchableOpacity} from 'react-native';
 import { StyledComponent } from "nativewind";
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { BlurView } from 'expo-blur';
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 
@@ -25,61 +25,71 @@ import closeModal from '../img/close_ring.png'
 import gamepad from '../img/Gamepad.png'
 
 import styles from '../style'
-
-const Rooms = [
-  {
-      name: 'Living room',
-      img: livingRoom,
-      device: ['Main light', 'Corner light', 'Fan','Main light', 'Corner light', 'Fan'],
-      temperature: 20,
-      intensity: 5,
-  },
-  {
-      name: 'Kitchen',
-      img: kitchen,
-      device: ['Main light', 'Corner light', 'Fan'],
-      temperature: 20,
-      intensity: 5,
-  },
-  {
-      name: 'Bed room',
-      img: bedRoom,
-      device: ['Main light', 'Corner light', 'Fan'],
-      temperature: 20,
-      intensity: 5,
-  },
-  {
-      name: 'Studio room',
-      img: studioRoom,
-      device: ['Main light', 'Corner light', 'Fan'],
-      temperature: 20,
-      intensity: 5,
-  },
-  {
-      name: 'Studio room',
-      img: studioRoom,
-      device: ['Main light', 'Corner light', 'Fan'],
-      temperature: 20,
-      intensity: 5,
-  },
-  {
-      name: 'Studio room',
-      img: studioRoom,
-      device: ['Main light', 'Corner light', 'Fan'],
-      temperature: 20,
-      intensity: 5,
-  },
-  {
-      name: 'Studio room',
-      img: studioRoom,
-      device: ['Main light', 'Corner light', 'Fan'],
-      temperature: 20,
-      intensity: 5,
-  }
-]
-
+import { getRoomDetail } from '../api/roomApi';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+// const Rooms = [
+//   {
+//       name: 'Living room',
+//       img: livingRoom,
+//       device: ['Main light', 'Corner light', 'Fan','Main light', 'Corner light', 'Fan'],
+//       temperature: 20,
+//       intensity: 5,
+//   },
+//   {
+//       name: 'Kitchen',
+//       img: kitchen,
+//       device: ['Main light', 'Corner light', 'Fan'],
+//       temperature: 20,
+//       intensity: 5,
+//   },
+//   {
+//       name: 'Bed room',
+//       img: bedRoom,
+//       device: ['Main light', 'Corner light', 'Fan'],
+//       temperature: 20,
+//       intensity: 5,
+//   },
+//   {
+//       name: 'Studio room',
+//       img: studioRoom,
+//       device: ['Main light', 'Corner light', 'Fan'],
+//       temperature: 20,
+//       intensity: 5,
+//   },
+//   {
+//       name: 'Studio room',
+//       img: studioRoom,
+//       device: ['Main light', 'Corner light', 'Fan'],
+//       temperature: 20,
+//       intensity: 5,
+//   },
+//   {
+//       name: 'Studio room',
+//       img: studioRoom,
+//       device: ['Main light', 'Corner light', 'Fan'],
+//       temperature: 20,
+//       intensity: 5,
+//   },
+//   {
+//       name: 'Studio room',
+//       img: studioRoom,
+//       device: ['Main light', 'Corner light', 'Fan'],
+//       temperature: 20,
+//       intensity: 5,
+//   }
+// ]
+let Rooms ={}
 const Room = ({ route }) => {
   const { id } = route.params
+  const [Rooms,setRooms] = useState({"room": {"__v": 0, "_id": "64390ba8dd5660bc9c50a840", "name": "Living Room ", "roomType": "Living Room", "user": "64390ba8dd5660bc9c50a83d"}, "roomDevices": [], "roomSensors": []})
+  useEffect (() => {
+        (async () => {
+            const token = await AsyncStorage.getItem('user')
+            const res = await getRoomDetail(token,id)
+            setRooms(res)
+            console.log(res) 
+        })()
+    }, [])
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -107,10 +117,10 @@ const Room = ({ route }) => {
 
             <View className='bg-[#191970] px-2 rounded-2xl py-4 opacity-90' style={styles.shadow}>
               <View className='flex flex-row items-center px-4'>
-                <Text className='text-white font-black text-xl tracking-wider pr-2 py-2'>{Rooms[id].name}</Text>
+                <Text className='text-white font-black text-xl tracking-wider pr-2 py-2'>{Rooms.room.name}</Text>
               </View>
 
-              <Text className='text-white tracking-wider px-4 text-base font-semibold'>{Rooms[id].device.length} devices</Text>
+              <Text className='text-white tracking-wider px-4 text-base font-semibold'>{Rooms.roomSensors.length} devices</Text>
 
               <View className='flex flex-row justify-around pt-6'>
 
@@ -120,7 +130,7 @@ const Room = ({ route }) => {
                     <Image source={temperatureImg}></Image>
                   </View>
                   <View className='bg-white rounded-b-xl items-center my-auto py-4'>
-                    <Text className='text-[#414141] text-xl font-medium'>{Rooms[id].temperature} °C</Text>
+                    <Text className='text-[#414141] text-xl font-medium'>{} °C</Text>
                   </View>
                 </View>
 
@@ -130,7 +140,7 @@ const Room = ({ route }) => {
                     <Image source={intensityImg}></Image>
                   </View>
                   <View className='bg-white rounded-b-xl items-center my-auto py-4'>
-                    <Text className='text-[#414141] text-xl font-medium'>{Rooms[id].intensity} cd</Text>
+                    <Text className='text-[#414141] text-xl font-medium'>{} cd</Text>
                   </View>
                 </View>
 
@@ -196,11 +206,11 @@ const Room = ({ route }) => {
           </View>
 
           <View className='h-[45%] w-full'>
-            <Text className="text-[#414141] font-medium opacity-80 text-base px-6 pb-4">All devices ({Rooms[id].device.length})</Text>
+            <Text className="text-[#414141] font-medium opacity-80 text-base px-6 pb-4">All devices ({Rooms.roomSensors.length})</Text>
             
             <ScrollView>
               <View className='flex items-center gap-4 mb-6 mx-4'>
-                {Rooms[id].device.map((item, index) => (
+                {Rooms.roomDevices.map((item, index) => (
                   <View 
                     className='w-full border border-[#12BEF6] border-2 rounded-xl bg-white'
                     key={index}

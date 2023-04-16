@@ -27,7 +27,6 @@ const SignUp = ({ navigation }) => {
     useEffect(()=>{
         (async () => {
             const res = await signUp(formValue); 
-           
             if (res && res.message) {
               Toast.show({
                 type: 'error',

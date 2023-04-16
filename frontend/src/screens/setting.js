@@ -13,6 +13,8 @@ import styles from '../style';
 import BackGround from '../components/background';
 import Footer from '../components/footer';
 import Header from '../components/header';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const Setting = () => {
     const navigation = useNavigation()
     return (
@@ -65,7 +67,7 @@ const Setting = () => {
                         <View className="flex flex-row justify-between items-center px-4">
                             <View className="flex flex-row gap-x-4 items-center">
                                 <Image source={logout} className="scale-[1.1]"></Image>
-                                <Pressable className="flex flex-col" onPress={() => navigation.navigate('SignIn')}>
+                                <Pressable className="flex flex-col" onPress={() => {AsyncStorage.removeItem('user');navigation.navigate('SignIn')}}>
                                     <Text className="text-lg font-semibold">Logout</Text>
                                     <Text className="text-sm text-gray-400">Further secure your account for safety</Text>
                                 </Pressable>
