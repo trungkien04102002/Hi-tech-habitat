@@ -1,6 +1,7 @@
 import {View, Text, Image, Animated, TouchableOpacity,TextInput} from 'react-native';
 import { StyledComponent } from "nativewind";
 import React, {useEffect,useState, useRef} from 'react';
+import { useIsFocused } from '@react-navigation/native';
 import BackGround from '../components/background';
 import Toast from 'react-native-toast-message';
 
@@ -37,11 +38,22 @@ const SignUp = ({ navigation }) => {
             }
 
             else if (res) {
-                localStorage.setItem("user", res.token);
                 navigation.navigate("Home")
             }
         })()
     },[state]);
+
+    const isFocused = useIsFocused();
+    useEffect(() => {
+        if (isFocused) {
+            setformValue({
+                name: '',
+                contact: '',
+                email: '',
+                password: ''
+            })
+        }
+    }, [isFocused])
 
     const translateY = useRef(new Animated.Value(600)).current
 

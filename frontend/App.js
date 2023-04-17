@@ -16,20 +16,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const [screen, setScreen] = useState('Started')
   const navigationRef = useRef(null);
-  const [token,setToken] = useState( AsyncStorage.getItem('user'))
+  const [token,setToken] = useState(null)
+  const [screen, setScreen] = useState('Started')
   useEffect(() => {
-    const unsubscribe = navigationRef.current?.addListener('state', () => {
-      const currentRouteName = navigationRef.current.getCurrentRoute().name;
-      setScreen(currentRouteName);
-    });
     (async () => {
           setToken(await AsyncStorage.getItem('user'))
-          // console.log(await AsyncStorage.getItem('user'))
       })()
+
+      const unsubscribe = navigationRef.current?.addListener('state', () => {
+        const currentRouteName = navigationRef.current.getCurrentRoute().name;
+        setScreen(currentRouteName);
+      });
     return unsubscribe;
-  }, []);
+
+  }, [screen]);
 
   // function setInitRoute(){
   //   let token = ''
@@ -42,8 +43,10 @@ export default function App() {
 
   return (
       <NavigationContainer ref={navigationRef} className='flex-1'>
+        {console.log(screen)}
+        {console.log(token)}
         <Stack.Navigator
-          initialRouteName={token == null ? 'Started' :'Home'}
+          initialRouteName={token === null ? 'Started' :'Home'}
           screenOptions={{
             headerShown: false,
           }}

@@ -64,11 +64,14 @@ import styles from '../style'
 //     }
 // ]
 
+let name = null
+
 const Home = ({ navigation }) => {
     const [Rooms,setRooms] = useState([])
     useEffect (() => {
         (async () => {
             const token = await AsyncStorage.getItem('user')
+            name = await AsyncStorage.getItem('name')
             // console.log(token)
             const res = await getRoom(token)
             setRooms(res)
@@ -138,7 +141,7 @@ const Home = ({ navigation }) => {
             <View className="flex flex-col h-screen ">
             
                 <StyledComponent component={View} className="items-center h-full w-full pt-12 px-2">
-                    <Header id={0} />
+                    <Header id={0} name={name} />
                     
                     {/* slider */}
                     <View className='rounded-2xl bg-[#D4E9EE] w-[92%] mt-6 h-[180]' style={styles.innerShadow}>

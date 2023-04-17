@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, Image, ScrollView, Pressable} from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import BackGround from '../components/background';
 import Footer from '../components/footer';
 import Header from '../components/header';
@@ -10,7 +10,15 @@ import light from '../img/light.png';
 import temperature from '../img/temperature.png';
 
 import styles from '../style'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const Statistic = () => {
+  const [name, setName] = useState(null)
+  useEffect(() => {
+    (async () => {
+      setName(await AsyncStorage.getItem('name'))
+    })()
+  }, [])
 
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState('1 month');
@@ -33,7 +41,7 @@ const Statistic = () => {
         <View className="flex h-screen">
  
           <View className="h-full w-full pt-12 px-2 items-center">
-              <Header  id={2} />
+              <Header  id={2} name={name} />
               {/* Selection */}
               <View className="flex flex-row gap-x-10 px-2 pt-6 z-10">
                 <View className="w-2/5">

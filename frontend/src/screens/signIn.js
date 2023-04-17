@@ -58,6 +58,12 @@ const SignIn = ({ navigation }) => {
         if (!isFocused) {
             translateY.setValue(500)
         }
+        else {
+            setformValue({
+                email:'',
+                password:'' 
+            })
+        }
     }, [isFocused])
 
     const handleHide = () => {

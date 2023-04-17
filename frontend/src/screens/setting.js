@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 
 import {View, Text, Image, ScrollView, Pressable} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -7,7 +7,7 @@ import bell from '../img/bell_icon.png';
 import heart from '../img/heart.png';
 import sheld from '../img/sheld.png';
 import account from '../img/account_icon.png';
-import logout from '../img/logout.png';
+import logoutImg from '../img/logout.png';
 import next from '../img/next.png';
 import styles from '../style';
 import BackGround from '../components/background';
@@ -15,15 +15,29 @@ import Footer from '../components/footer';
 import Header from '../components/header';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const Setting = () => {
-    const navigation = useNavigation()
-    return (
 
+
+const logout = async (navigation) => {
+    await AsyncStorage.removeItem('user')
+    navigation.navigate('SignIn')
+}
+
+const Setting = () => {
+    const [name, setName] = useState(null)
+    const navigation = useNavigation()
+
+    useEffect (() => {
+        (async () => {
+            setName(await AsyncStorage.getItem('name'))
+        })() 
+    }, [])
+
+    return (
         <BackGround>
 
         <View className="flex flex-col h-screen">
             <View className="pt-12 items-center px-2">
-                <Header  id={3} />
+                <Header  id={3} name={name} />
                  
                 {/* Setting option */}
                 <View className='mb-8'>
@@ -66,8 +80,8 @@ const Setting = () => {
 
                         <View className="flex flex-row justify-between items-center px-4">
                             <View className="flex flex-row gap-x-4 items-center">
-                                <Image source={logout} className="scale-[1.1]"></Image>
-                                <Pressable className="flex flex-col" onPress={() => {AsyncStorage.removeItem('user');navigation.navigate('SignIn')}}>
+                                <Image source={logoutImg} className="scale-[1.1]"></Image>
+                                <Pressable className="flex flex-col" onPress={() => logout(navigation)}>
                                     <Text className="text-lg font-semibold">Logout</Text>
                                     <Text className="text-sm text-gray-400">Further secure your account for safety</Text>
                                 </Pressable>

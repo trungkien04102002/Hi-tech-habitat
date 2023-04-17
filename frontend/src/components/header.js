@@ -8,7 +8,7 @@ import MenuSide from './menuSide';
 import Notification from './notification';
 
 const Header = ( props ) => {
-    const id = props.id
+    const {id, name} = props
     const navigation = useNavigation()
 
     const [menuSideState, setMenuSideState] = useState(false)
@@ -104,7 +104,7 @@ const Header = ( props ) => {
                         source={require('../img/profile.png')}>
                     </StyledComponent>
                     <StyledComponent component={View} className="flex flex-col">
-                        <Text className="font-black text-xl">Hi Taylor S.</Text>
+                        <Text className="font-black text-xl">Hi {name}</Text>
                         <Text className="font-semibold text-[#838A8F]">Monday, 20 Jan</Text>
                     </StyledComponent>
                 </View>
