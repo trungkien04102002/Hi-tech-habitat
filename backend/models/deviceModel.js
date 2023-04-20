@@ -9,7 +9,11 @@ var deviceModel = new Schema({
         type: String,
         required: true
     },
-    feed: {
+    stateFeed: {
+        type: String,
+        required: true
+    },
+    modeFeed: {
         type: String,
         required: true
     },

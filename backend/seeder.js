@@ -68,8 +68,8 @@ const importData = async() => {
                 user: importedUsers[1]._id
             }
         ];
-
         const importedRooms = await Room.insertMany(rooms);
+
 
         // Create carts for customer accounts
         // var customers = await Promise.all(importedUsers.filter(

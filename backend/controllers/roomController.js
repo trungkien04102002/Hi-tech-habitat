@@ -18,6 +18,7 @@ class RoomController {
 
     //  [GET - ROUTE: api/room/:id]  
     getOneRoom = asyncHandler(async(req, res) => {
+        console.log('co vo day k')
         var room = await Room.findById(req.params.id);
         if (!room) {
             res.status(404)

@@ -43,7 +43,7 @@ class SensorController {
         const { type, unit, feed } = req.body;
         const allowedFeeds = ['humi', 'temperature']
         if (!allowedFeeds.includes(req.body.feed)) {
-            return res.status(400).send({ error: 'Invalid input!' })
+            return res.status(400).send({ error: 'Feed of sensor must be humi or temperature!' })
         }
 
         const sensorCheck = await Sensor.findOne({

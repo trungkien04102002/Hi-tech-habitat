@@ -41,10 +41,14 @@ class DeviceController {
             res.status(401)
             throw new Error("You don't have permit to add device in this rooms!")
         }
-        const { name, type, feed } = req.body;
-        const allowedFeeds = ['fan', 'light', 'fanbutton', 'fanmode']
-        if (!allowedFeeds.includes(req.body.feed)) {
-            return res.status(400).send({ error: 'Invalid input!' })
+        const { name, type, stateFeed, modeFeed } = req.body;
+        const allowedStateFeeds = ['fanbutton', 'lightbutton']
+        if (!allowedStateFeeds.includes(req.body.stateFeed)) {
+            return res.status(400).send({ error: 'StateFeed must be in feed fanbutton or lightbutton!' })
+        }
+        const allowedModeFeeds = ['fanmode', 'lightmode']
+        if (!allowedModeFeeds.includes(req.body.modeFeed)) {
+            return res.status(400).send({ error: 'ModeFeed must be in feed fanmode or lightmode!' })
         }
 
         const deviceCheck = await Device.findOne({
@@ -55,7 +59,8 @@ class DeviceController {
             var newDevice = await Device.create({
                 name,
                 type,
-                feed,
+                stateFeed,
+                modeFeed,
                 deviceRecord: [],
                 room: room._id
             })
@@ -76,14 +81,13 @@ class DeviceController {
     // [ PATCH - ROUTE: api/device/:id ]  -- id is the ID of  the device
     updateDevice = asyncHandler(async(req, res) => {
         const updates = Object.keys(req.body)
-        const allowedUpdates = ['name', 'type', 'feed']
+        const allowedUpdates = ['name']
         const allowedFeedsUpdates = ['fan', 'light', 'fanbutton']
         const isValidOperation = updates.every((update) => allowedUpdates.includes(update)) // Check operation
 
         if (!isValidOperation) {
             return res.status(400).send({ error: 'Invalid updates!' })
         }
-        console.log(req.body.feed)
 
         if (!allowedFeedsUpdates.includes(req.body.feed)) {
             return res.status(400).send({ error: 'Invalid updates!' })
@@ -115,9 +119,9 @@ class DeviceController {
             } else {
 
                 var newDevice = await Device.findOneAndUpdate({ _id: req.params.id }, {
-                    name: (req.body.name || device.name),
-                    type: (req.body.type || room.type),
-                    feed: (req.body.feed || room.feed)
+                    name: (req.body.name || device.name)
+                        // type: (req.body.type || room.type),
+                        // feed: (req.body.feed || room.feed)
                 }, {
                     new: true
                 });
@@ -146,19 +150,17 @@ class DeviceController {
         }
     })
 
-
     // [ POST - ROUTE: api/device/state/:id ] 
     addStateDevice = asyncHandler(async(req, res) => {
         const { on } = req.body;
-
 
         var device = await Device.findById(req.params.id);
         if (!device) {
             res.status(404)
             throw new Error("Device does not exist!")
-        } 
+        }
 
-        var room = await Room.findOne({_id: device.room})
+        var room = await Room.findOne({ _id: device.room })
 
         if (room.user.toString() != req.user._id) {
             res.status(401)
@@ -166,11 +168,11 @@ class DeviceController {
         }
         const aioKey = process.env.ADA_KEY;
         const aioUsername = process.env.ADA_USERNAME;
-        const feedKey = device.feed;
-      
+        const feedKey = device.stateFeed;
 
-        const postData = JSON.stringify({ value: Number(on)==1 ? 1 : 0 });
-          
+
+        const postData = JSON.stringify({ value: Number(on) == 1 ? 1 : 0 });
+
         const options = {
             hostname: 'io.adafruit.com',
             port: 443,
@@ -185,7 +187,7 @@ class DeviceController {
 
         const request = https.request(options, res => {
             console.log(`statusCode: ${res.statusCode}`);
-          
+
         });
         request.on('error', error => {
             console.error(error);
@@ -194,20 +196,60 @@ class DeviceController {
         });
         request.write(postData);
         request.end();
-        res.status(200).json({msg:`Light turned ${Number(on) == 1 ? 'on' : 'off'}`});
+        res.status(200).json({ msg: `Light turned ${Number(on) == 1 ? 'on' : 'off'}` });
+    })
 
-        // await Device.updateMany({ feed:feedKey }, {
-        //     $push: {
-        //         deviceRecord: {
-        //             state: Number(on),
-        //             time: new Date()
-        //         }
-        //     }
-        // })
+    // [ POST - ROUTE: api/device/mode/:id ] 
+    addModeDevice = asyncHandler(async(req, res) => {
+        const { on } = req.body;
 
-        
+        var device = await Device.findById(req.params.id);
+        if (!device) {
+            res.status(404)
+            throw new Error("Device does not exist!")
+        }
+
+        var room = await Room.findOne({ _id: device.room })
+
+        if (room.user.toString() != req.user._id) {
+            res.status(401)
+            throw new Error("You don't have permit to update this devices!")
+        }
+        const aioKey = process.env.ADA_KEY;
+        const aioUsername = process.env.ADA_USERNAME;
+        const feedKey = device.modeFeed;
+
+
+        const postData = JSON.stringify({ value: Number(on) == 1 ? 1 : 0 });
+
+        const options = {
+            hostname: 'io.adafruit.com',
+            port: 443,
+            path: `/api/v2/${aioUsername}/feeds/${feedKey}/data`,
+            method: 'POST',
+            headers: {
+                'X-AIO-Key': aioKey,
+                'Content-Type': 'application/json',
+                'Content-Length': postData.length
+            }
+        };
+
+        const request = https.request(options, res => {
+            console.log(`statusCode: ${res.statusCode}`);
+
+        });
+        request.on('error', error => {
+            console.error(error);
+            res.status(300)
+            throw new Error("Cannot make request to adafruit")
+        });
+        request.write(postData);
+        request.end();
+        res.status(200).json({ msg: `Automation turned ${Number(on) == 1 ? 'on' : 'off'}` });
     })
 }
+
+
 
 
 module.exports = new DeviceController;
