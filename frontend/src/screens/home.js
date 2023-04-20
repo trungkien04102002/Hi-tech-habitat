@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import {View, Text, Image, ScrollView, Pressable, ImageBackground, Animated} from 'react-native';
+import {View, Text, Image, ScrollView, Modal, Pressable, ImageBackground, Animated, TextInput} from 'react-native';
+import { BlurView } from 'expo-blur';
 import { StyledComponent } from "nativewind";
 import Swiper from 'react-native-swiper';
 
@@ -13,56 +14,15 @@ import energy from '../img/energy.png'
 import energybg from '../img/energybg.png'
 import temperatureIcon from '../img/temperatureIcon.png'
 import temperaturebg from '../img/temperaturebg.png'
+import bgAddDevice from '../img/Rectangle.png'
+import gamepad from '../img/Gamepad.png'
+import addsuccess from '../img/Done_ring_round.png'
+import closeModal from '../img/close_ring.png'
 
 import {getRoom,getRoomDetail} from '../api/roomApi'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import styles from '../style'
-
-// const Rooms = [
-//     {
-//         name: 'Living Room',
-//         img: livingRoom,
-//         numOfDevices: 4,
-//         temperature: 20,
-//     },
-//     {
-//         name: 'Kitchen',
-//         img: kitchen,
-//         numOfDevices: 24,
-//         temperature: 20
-//     },
-//     {
-//         name: 'Bed room',
-//         img: bedRoom,
-//         numOfDevices: 1,
-//         temperature: 20
-//     },
-//     {
-//         name: 'Studio room',
-//         img: studioRoom,
-//         numOfDevices: 1,
-//         temperature: 20
-//     },
-//     {
-//         name: 'Studio room',
-//         img: studioRoom,
-//         numOfDevices: 1,
-//         temperature: 20
-//     },
-//     {
-//         name: 'Studio room',
-//         img: studioRoom,
-//         numOfDevices: 1,
-//         temperature: 20
-//     },
-//     {
-//         name: 'Studio room',
-//         img: studioRoom,
-//         numOfDevices: 1,
-//         temperature: 20
-//     }
-// ]
 
 let name = null
 
@@ -99,7 +59,7 @@ const Home = ({ navigation }) => {
 
     const [position] = useState(new Animated.Value(-10));
     const [scale] = useState(new Animated.Value(0.9));
-    const [visible, setVisible] = useState(true);
+    const [animatedvisible, setanimatedVisible] = useState(true);
 
     useEffect(() => {
         Animated.loop(
@@ -115,8 +75,8 @@ const Home = ({ navigation }) => {
                     useNativeDriver: true,
                 }),
             ]) 
-        ).start(() => setVisible(!visible));
-    }, [visible]); 
+        ).start(() => setanimatedVisible(!animatedvisible));
+    }, [animatedvisible]); 
 
     useEffect(() => {
         Animated.loop(
@@ -132,8 +92,10 @@ const Home = ({ navigation }) => {
                     useNativeDriver: true,
                 }),
             ]) 
-        ).start(() => setVisible(!visible));
-    }, [visible]); 
+        ).start(() => setanimatedVisible(!animatedvisible));
+    }, [animatedvisible]); 
+
+    const [modalVisible, setModalVisible] = useState(false);
 
     return (
         <BackGround>
@@ -158,7 +120,7 @@ const Home = ({ navigation }) => {
                                         <Text className='text-[#959595] text-base font-bold tracking-wider'>23.5 kWh</Text>
                                     </View> 
                                     <Animated.View style={{ transform: [{ translateX: position }] }}>
-                                        {visible && <Image className='scale-[0.8]' source={energy}></Image>}
+                                        {animatedvisible && <Image className='scale-[0.8]' source={energy}></Image>}
                                     </Animated.View>
                                 </ImageBackground>
                             </View>
@@ -174,7 +136,7 @@ const Home = ({ navigation }) => {
                                         <Text className='text-[#1FC8FF] text-base font-bold tracking-wider'>Cool</Text>
                                     </View>
                                     <Animated.View style={{ transform: [{ scale: scale }] }}>
-                                        {visible && <Image className='scale-[0.8]' source={temperatureIcon}></Image>}
+                                        {animatedvisible && <Image className='scale-[0.8]' source={temperatureIcon}></Image>}
                                     </Animated.View> 
                                 </ImageBackground>    
                             </View>
@@ -183,13 +145,64 @@ const Home = ({ navigation }) => {
 
                     <View className="flex flex-row justify-between px-4 w-full pt-8">
                         <Text className="flex text-[#414141] font-medium opacity-80 text-base">All rooms ({Rooms.length})</Text>
-                        <View className="flex flex-row gap-x-2 items-center">
+                        <Pressable
+                            onPress={() => setModalVisible(!modalVisible)}
+                            className="flex flex-row gap-x-2 items-center"
+                        >
                             <Text className="flex text-[#414141] font-medium opacity-80 text-base">Add room</Text>
                             <StyledComponent component={Image} className="object-cover opacity-90" 
                                 source={require('../img/Add_ring.png')}></StyledComponent>
-                        </View>
+                        </Pressable>
                         
                     </View>
+
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={modalVisible}
+                        onRequestClose={() => {
+                        setModalVisible(!modalVisible);
+                        }}>
+                        
+                        <View className='justify-center my-auto mx-auto w-[90%] border border-black-2 rounded-xl'>
+                        <ImageBackground 
+                            source={bgAddDevice} 
+                            imageStyle={{ borderRadius: 12 }}
+                        >
+                            <View className='flex flex-row px-10 py-5 gap-x-3 items-center'>
+                            <Image source={gamepad} className='scale-[1.2]'></Image>
+                            <Text className='text-[#414141] font-medium opacity-80 text-xl tracking-wider'>
+                                New Room
+                            </Text>
+                            </View>
+                            <View className='flex items-center gap-y-4'>  
+                            <TextInput 
+                                className="py-2.5 rounded-xl border w-[80%] px-4 bg-white border-white" 
+                                placeholder="Enter room name" 
+                                style={styles.shadow} 
+                            />
+                            <TextInput 
+                                className="py-2.5 rounded-xl border w-[80%] px-4 bg-white border-white mb-4" 
+                                placeholder="Choose Type Of Room" 
+                                style={styles.shadow} 
+                            />
+                            </View>
+                            
+                            <View className='flex flex-row bg-[#e6e6e6] rounded-xl mt-4'>
+                            <Pressable className='w-1/2 items-center scale-125 py-3'>
+                                <Image source={addsuccess}></Image>
+                            </Pressable>
+
+                            <Pressable 
+                                onPress={() => setModalVisible(!modalVisible)}
+                                className='w-1/2 items-center scale-125 py-3'
+                            >
+                                <Image source={closeModal}></Image>
+                            </Pressable>
+                            </View>
+                        </ImageBackground>
+                        </View>
+                    </Modal>
 
                     {/* room */}
                     <ScrollView className="h-full mb-6">
@@ -216,7 +229,13 @@ const Home = ({ navigation }) => {
 
             </View>
           
-
+            {modalVisible && 
+            <BlurView
+                tint="light"
+                intensity={100}
+                className='absolute w-full h-full'
+            />
+      }                        
 
         </BackGround>
     );

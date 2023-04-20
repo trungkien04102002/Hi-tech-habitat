@@ -6,7 +6,8 @@ import { useNavigation } from '@react-navigation/native';
 
 import Notification from './notification';
 
-const RoomHeader = () => {
+const RoomHeader = ( props ) => {
+    const {name} = props
     const navigation = useNavigation()
 
     return (
@@ -23,7 +24,7 @@ const RoomHeader = () => {
                     source={require('../img/profile.png')}>
                 </StyledComponent>
                 <StyledComponent component={View} className="flex flex-col">
-                    <Text className="font-black text-xl">Hi Taylor S.</Text>
+                    <Text className="font-black text-xl">Hi {name}</Text>
                     <Text className="font-semibold text-[#838A8F]">Monday, 20 Jan</Text>
                 </StyledComponent>
             </View>
