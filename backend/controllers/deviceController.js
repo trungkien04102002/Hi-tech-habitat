@@ -82,16 +82,16 @@ class DeviceController {
     updateDevice = asyncHandler(async(req, res) => {
         const updates = Object.keys(req.body)
         const allowedUpdates = ['name']
-        const allowedFeedsUpdates = ['fan', 'light', 'fanbutton']
+            // const allowedFeedsUpdates = ['fan', 'light', 'fanbutton']
         const isValidOperation = updates.every((update) => allowedUpdates.includes(update)) // Check operation
 
         if (!isValidOperation) {
             return res.status(400).send({ error: 'Invalid updates!' })
         }
 
-        if (!allowedFeedsUpdates.includes(req.body.feed)) {
-            return res.status(400).send({ error: 'Invalid updates!' })
-        }
+        // if (!allowedFeedsUpdates.includes(req.body.feed)) {
+        //     return res.status(400).send({ error: 'Invalid updates!' })
+        // }
 
         var device = await Device.findById(req.params.id);
         if (!device) {
