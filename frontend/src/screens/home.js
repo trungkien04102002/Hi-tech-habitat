@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import {View, Text, Image, ScrollView, Modal, Pressable, ImageBackground, Animated, TextInput} from 'react-native';
 import { BlurView } from 'expo-blur';
 import { StyledComponent } from "nativewind";
 import Swiper from 'react-native-swiper';
+import Toast from 'react-native-toast-message';
+import { useNavigation } from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 
 import Header from '../components/header';
 import BackGround from '../components/background';
@@ -19,14 +22,59 @@ import gamepad from '../img/Gamepad.png'
 import addsuccess from '../img/Done_ring_round.png'
 import closeModal from '../img/close_ring.png'
 
-import {getRoom,getRoomDetail} from '../api/roomApi'
+import { getRoom, getRoomDetail, addRoom } from '../api/roomApi'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import styles from '../style'
 
 let name = null
 
-const Home = ({ navigation }) => {
+const Home = () => {
+    const navigation = useNavigation()
+    const isFocused = useIsFocused()
+    
+    const [state,setState] = useState(true)
+    const [loadRoom, setLoadRoom] = useState(true)
+
+    const [formValue, setformValue] = useState({
+        name:'',
+        roomType:'' 
+    });
+
+    const handleChange = (event,name) => {
+        setformValue({
+            ...formValue,
+            [name]: event.nativeEvent.text,
+        });
+    }
+
+    useEffect(()=>{
+        (async () => {
+            const token = await AsyncStorage.getItem('user')
+            const res = await addRoom(token, formValue); 
+            
+            if (res && res.message) {
+              Toast.show({
+                type: 'error',
+                text1: 'Add new Room Failed',
+                text2: res.message,
+                visibilityTime: 2000,
+              });
+            }
+
+            else if (res) {
+                setModalVisible(!modalVisible)
+                setLoadRoom(!loadRoom)
+            }
+        })()
+    },[state]);
+
+    useLayoutEffect(() => {
+        if (isFocused) {
+            setLoadRoom(!loadRoom)
+        }
+    }, [isFocused])
+
     const [Rooms,setRooms] = useState([])
     useEffect (() => {
         (async () => {
@@ -37,7 +85,7 @@ const Home = ({ navigation }) => {
             setRooms(res)
             // console.log(res) 
         })()
-    }, [])
+    }, [loadRoom])
 
     function getNumofDevices(id) {
         num =0;
@@ -46,9 +94,9 @@ const Home = ({ navigation }) => {
             // console.log(token)
             const res = await getRoomDetail(token,id)
             // console.log(res.room.name)
-            num = res.roomDevices.length
+            num = res.roomDevices? res.roomDevices.length : 0
         })()
-        return num
+        return num 
     }
 
     function genImg(){
@@ -176,20 +224,25 @@ const Home = ({ navigation }) => {
                             </Text>
                             </View>
                             <View className='flex items-center gap-y-4'>  
-                            <TextInput 
-                                className="py-2.5 rounded-xl border w-[80%] px-4 bg-white border-white" 
-                                placeholder="Enter room name" 
-                                style={styles.shadow} 
-                            />
-                            <TextInput 
-                                className="py-2.5 rounded-xl border w-[80%] px-4 bg-white border-white mb-4" 
-                                placeholder="Choose Type Of Room" 
-                                style={styles.shadow} 
-                            />
+                                <TextInput 
+                                    onChange={event => handleChange(event,'name')}
+                                    className="py-2.5 rounded-xl border w-[80%] px-4 bg-white border-white" 
+                                    placeholder="Enter room name" 
+                                    style={styles.shadow} 
+                                />
+                                <TextInput 
+                                    onChange={event => handleChange(event,'roomType')}
+                                    className="py-2.5 rounded-xl border w-[80%] px-4 bg-white border-white mb-4" 
+                                    placeholder="Choose Type Of Room" 
+                                    style={styles.shadow} 
+                                />
                             </View>
                             
                             <View className='flex flex-row bg-[#e6e6e6] rounded-xl mt-4'>
-                            <Pressable className='w-1/2 items-center scale-125 py-3'>
+                            <Pressable 
+                                onPress={() => setState(!state)}
+                                className='w-1/2 items-center scale-125 py-3'
+                            >
                                 <Image source={addsuccess}></Image>
                             </Pressable>
 
@@ -230,13 +283,13 @@ const Home = ({ navigation }) => {
             </View>
           
             {modalVisible && 
-            <BlurView
-                tint="light"
-                intensity={100}
-                className='absolute w-full h-full'
-            />
-      }                        
-
+                <BlurView
+                    tint="light"
+                    intensity={100}
+                    className='absolute w-full h-full'
+                />
+            }                        
+            <Toast toastRef={(toastRef) => Toast.setRef(toastRef)}/>
         </BackGround>
     );
 }

@@ -3,9 +3,9 @@ import { StyledComponent } from "nativewind";
 import React, { useState,useEffect } from 'react';
 import { BlurView } from 'expo-blur';
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
 
 import BackGround from '../components/background';
-import RoomHeader from '../components/roomheader';
 
 import temperatureImg from '../img/temper.png'
 import intensityImg from '../img/inten.png'
@@ -19,7 +19,7 @@ import closeModal from '../img/close_ring.png'
 import gamepad from '../img/Gamepad.png'
 
 import styles from '../style'
-import { getRoomDetail } from '../api/roomApi';
+import { getRoomDetail, deleteRoom } from '../api/roomApi';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Room = ({ route }) => {
@@ -30,6 +30,7 @@ const Room = ({ route }) => {
     roomSensors: [],
   })
   const { id } = route.params
+  const navigation = useNavigation()
 
   useEffect (() => {
     (async () => {
@@ -40,6 +41,13 @@ const Room = ({ route }) => {
       console.log(res)
     })()
   }, [])
+
+  const deleteRoomHandle = async (id) => {
+    const token = await AsyncStorage.getItem('user')
+    const res = await deleteRoom(token, id)
+    console.log(token, res)
+    navigation.navigate('Home')
+  } 
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -58,10 +66,35 @@ const Room = ({ route }) => {
 
   return (
     <BackGround>
-
       <View className="flex flex-col h-screen ">
+
+        {/* header */}
         <StyledComponent component={View} className="h-full w-full pt-12 px-2 items-center">
-          <RoomHeader name={name} />
+          <StyledComponent component={View} className="flex flex-row justify-between w-full px-3 items-center">
+              <Pressable onPress={() => navigation.pop()}>
+                  <StyledComponent component={Image} className="object-cover scale-[1.4]" 
+                      source={require('../img/back_3.png')}>
+                  </StyledComponent>
+              </Pressable>
+
+              <Pressable onPress={() => navigation.navigate('Profile')}>
+              <View className="flex flex-row gap-x-5 items-center">
+                  <StyledComponent component={Image} className="object-cover" 
+                      source={require('../img/profile.png')}>
+                  </StyledComponent>
+                  <StyledComponent component={View} className="flex flex-col">
+                      <Text className="font-black text-xl">Hi {name}</Text>
+                      <Text className="font-semibold text-[#838A8F]">Monday, 20 Jan</Text>
+                  </StyledComponent>
+              </View>
+              </Pressable>
+              
+              <Pressable onPress={() => deleteRoomHandle(id)}>
+                  <Image className="object-cover scale-[1.3]" source={require('../img/Trash.png')}></Image>
+              </Pressable>
+
+          </StyledComponent>
+          {/* header */}
 
           <View className='bg-[#E0F2F9] w-[95%] rounded-2xl mx-auto my-8' style={styles.shadow}>
 

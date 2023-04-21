@@ -9,7 +9,7 @@ export const signIn = async(formValue) => {
     // make axios post request
     const res = await axios({
       method: "post",
-      url: "http://172.27.221.89:5000/api/user/auth",
+      url: "http://192.168.123.89:5000/api/user/auth",
       data: formValue,
       headers: { 
           Accept: 'application/json',
@@ -36,7 +36,7 @@ export const signUp = async(formValue) => {
     // make axios post request
     const res = await axios({
       method: "post",
-      url: "http://172.27.221.89:5000/api/user/register",
+      url: "http://192.168.123.89:5000/api/user/register",
       data: formValue,
       headers: { 
           Accept: 'application/json',
