@@ -76,7 +76,7 @@ class SensorController {
     updateSensor = asyncHandler(async(req, res) => {
         const updates = Object.keys(req.body)
         const allowedUpdates = ['type', 'unit', 'feed']
-        const allowedFeedsUpdates = ['fan', 'light', 'humi']
+            // const allowedFeedsUpdates = ['fan', 'light', 'humi']
         const isValidOperation = updates.every((update) => allowedUpdates.includes(update)) // Check operation
 
         if (!isValidOperation) {
@@ -84,9 +84,9 @@ class SensorController {
         }
         // console.log(req.body.feed)
 
-        if (!allowedFeedsUpdates.includes(req.body.feed)) {
-            return res.status(400).send({ error: 'Invalid updates!' })
-        }
+        // if (!allowedFeedsUpdates.includes(req.body.feed)) {
+        //     return res.status(400).send({ error: 'Invalid updates!' })
+        // }
 
         var sensor = await Sensor.findById(req.params.id);
         if (!sensor) {
@@ -113,7 +113,7 @@ class SensorController {
                 throw new Error("This sensor is belong to another room!")
             } else {
 
-                var newSensor = await sensor.findOneAndUpdate({ _id: req.params.id }, {
+                var newSensor = await Sensor.findOneAndUpdate({ _id: req.params.id }, {
                     type: (req.body.type || sensor.type),
                     unit: (req.body.unit || room.unit),
                     feed: (req.body.feed || room.feed)
@@ -127,7 +127,7 @@ class SensorController {
 
     //  [DELETE - ROUTE: api/sensor/:id] 
     deleteSensor = asyncHandler(async(req, res) => {
-        var sensor = await sensor.findById({
+        var sensor = await Sensor.findById({
             _id: req.params.id
         })
         if (!sensor) {
