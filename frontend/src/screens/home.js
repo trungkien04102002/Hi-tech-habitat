@@ -76,6 +76,7 @@ const Home = () => {
     }, [isFocused])
 
     const [Rooms,setRooms] = useState([])
+    const [listDS, setListDS] = useState(null)
     useEffect (() => {
         (async () => {
             const token = await AsyncStorage.getItem('user')
@@ -84,20 +85,14 @@ const Home = () => {
             const res = await getRoom(token)
             setRooms(res)
             // console.log(res) 
+            listDevicesSensors = {}
+            for (item of res) {
+                const roomDetail = await getRoomDetail(token, item._id)
+                listDevicesSensors[item._id] = roomDetail.roomDevices.concat(roomDetail.roomSensors)
+            }
+            setListDS(listDevicesSensors)
         })()
     }, [loadRoom])
-
-    function getNumofDevices(id) {
-        num =0;
-        (async () => {
-            const token = await AsyncStorage.getItem('user')
-            // console.log(token)
-            const res = await getRoomDetail(token,id)
-            // console.log(res.room.name)
-            num = res.roomDevices? res.roomDevices.length : 0
-        })()
-        return num 
-    }
 
     function genImg(){
        const imgList = [bedRoom,kitchen,livingRoom,studioRoom]
@@ -269,7 +264,7 @@ const Home = () => {
                                 >
                                     <Image source={genImg()}></Image>
                                     <Text className='text-[#3D3D3D] font-bold text-lg py-2'>{item.name}</Text>
-                                    <Text className='text-[#7D7D7D] pb-2'>{getNumofDevices(item._id) + ' devices'} </Text>
+                                    <Text className='text-[#7D7D7D] pb-2'>{(listDS? listDS[item._id].length: 0) + ' devices'} </Text>
                                     <Text className='text-[#7D7D7D] pb-8'>Temperature: 20 °C</Text>
                                 </Pressable>
                             ))}

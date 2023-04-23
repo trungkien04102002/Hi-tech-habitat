@@ -17,15 +17,16 @@ class SensorController {
             res.status(404)
             throw new Error("Sensor does not exist!")
         } else {
-            if (sensor.room.toString() != room._id.toString()) {
-                // console.log("ID sensor :", sensor.id);
-                // console.log("Room ID  of sensor :", sensor.room);
-                // console.log("Room id :", room._id);
-                res.status(401)
-                throw new Error("This sensor is belong to another room!")
-            } else {
-                res.json(sensor);
-            }
+            // if (sensor.room.toString() != room._id.toString()) {
+            //     // console.log("ID sensor :", sensor.id);
+            //     // console.log("Room ID  of sensor :", sensor.room);
+            //     // console.log("Room id :", room._id);
+            //     res.status(401)
+            //     throw new Error("This sensor is belong to another room!")
+            // } else {
+            //     res.json(sensor);
+            // }
+            res.json(sensor);
         }
     })
 
