@@ -9,24 +9,23 @@ const asyncHandler = require('express-async-handler')
 class SensorController {
     //  [ GET - ROUTE: api/sensor/:id ] -- id is the ID of sensor
     getSensor = asyncHandler(async(req, res) => {
-        var room = await Room.findOne({
-            user: req.user._id
-        });
+        const user = req.user._id
+        var rooms = await Room.find({
+            user
+        })
         var sensor = await Sensor.findById(req.params.id);
+        const sensorRoomId = sensor.room.toString();
+        const matchingRoom = rooms.find(room => room._id.toString() === sensorRoomId)
         if (!sensor) {
             res.status(404)
             throw new Error("Sensor does not exist!")
         } else {
-            // if (sensor.room.toString() != room._id.toString()) {
-            //     // console.log("ID sensor :", sensor.id);
-            //     // console.log("Room ID  of sensor :", sensor.room);
-            //     // console.log("Room id :", room._id);
-            //     res.status(401)
-            //     throw new Error("This sensor is belong to another room!")
-            // } else {
-            //     res.json(sensor);
-            // }
-            res.json(sensor);
+            if (!matchingRoom) {
+                res.status(401)
+                throw new Error("This sensors does not belong to any of the user's rooms!")
+            } else {
+                res.json(sensor);
+            }
         }
     })
 
