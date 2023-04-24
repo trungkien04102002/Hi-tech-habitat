@@ -10,11 +10,15 @@ const asyncHandler = require('express-async-handler')
 class DeviceController {
     //  [ GET - ROUTE: api/device/:id ] -- id is the ID of device
     getDevice = asyncHandler(async(req, res) => {
-        var room = await Room.findOne({
-            user: req.user._id
+        const user = req.user._id
+        var rooms = await Room.find({
+            user
         })
-        
-        var device = await Device.findById(req.params.id);
+
+        const device = await Device.findById(req.params.id);
+        const deviceRoomId = device.room.toString();
+        const matchingRoom = rooms.find(room => room._id.toString() === deviceRoomId)
+
         // console.log("ID device :", req.user._id);
         // console.log("Room ID  of Device :", device.room);
         // console.log("Room id :", room._id);
@@ -22,13 +26,12 @@ class DeviceController {
             res.status(404)
             throw new Error("Device does not exist!")
         } else {
-            // if (device.room.toString() != room._id.toString()) {
-            //     res.status(401)
-            //     throw new Error("This device is belong to another room!")
-            // } else {
-            //     res.json(device);
-            // }
-            res.json(device);
+            if (!matchingRoom) {
+                res.status(401)
+                throw new Error("This device does not belong to any of the user's rooms!")
+            } else {
+                res.json(device);
+            }
         }
     })
 
