@@ -13,7 +13,10 @@ class WebSockets {
     const sensors = client.handshake.auth.sensors;
     const {_id} = client.handshake.auth.user;
     devices.forEach(element => {
-        client.join(`${process.env.ADA_USERNAME}/feeds/`+ element.feed.toLowerCase());
+        client.join(`${process.env.ADA_USERNAME}/feeds/`+ element.stateFeed.toLowerCase());
+    });
+    devices.forEach(element => {
+      client.join(`${process.env.ADA_USERNAME}/feeds/`+ element.modeFeed.toLowerCase());
     });
     sensors.forEach(element => {
         client.join(`${process.env.ADA_USERNAME}/feeds/`+ element.feed.toLowerCase());

@@ -61,7 +61,7 @@ client.on('connect', function() {
     // aio.feeds().then(feeds => {
     //     console.log(feeds);
     // });
-    let feedList = ["temperature", "light", "fan", "fanbutton", "humi", "fanmode"]
+    let feedList = ["temperature", "light", "fan", "fanbutton", "humi", "fanmode","lightmode", "lightbutton"]
     feedList.forEach(x => {
         client.subscribe(`${ada_user}/feeds/${x}`);
     })
