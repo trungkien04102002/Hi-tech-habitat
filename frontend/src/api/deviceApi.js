@@ -4,7 +4,7 @@ export const getDevice = async(token, id) => {
   try {
     const res = await axios({
       method: "get",
-      url: `http://172.27.221.89:5000/api/device/${id}`,
+      url: `http://192.168.1.7:5000/api/device/${id}`,
       headers: { Authorization: `Bearer ${token}` }
     });
     return res.data;
@@ -21,7 +21,7 @@ export const addDevice = async(token,formValue,id) => {
     const res = await axios({
       method: "post",
       data: formValue,
-      url: `http://172.27.221.89:5000/api/device/${id}`,
+      url: `http://192.168.1.7:5000/api/device/${id}`,
       headers: { Authorization: `Bearer ${token}` }
     });
     return res.data;
@@ -34,7 +34,7 @@ export const deleteDevice = async(token,id) => {
   try {
     const res = await axios({
       method: "delete",
-      url: `http://172.27.221.89:5000/api/device/${id}`,
+      url: `http://192.168.1.7:5000/api/device/${id}`,
       headers: { Authorization: `Bearer ${token}` }
     });
     return res.data;
@@ -51,7 +51,7 @@ export const updateDevice = async(token,id,formValue) => {
     const res = await axios({
       method: "patch",
       data: formValue,
-      url: `http://172.27.221.89:5000/api/device/${id}`,
+      url: `http://192.168.1.7:5000/api/device/${id}`,
       headers: { Authorization: `Bearer ${token}` }
     });
     return res.data;
@@ -68,7 +68,7 @@ export const changeState = async(token,id,formValue) => {
     const res = await axios({
       method: "post",
       data: formValue,
-      url: `http://172.27.221.89:5000/api/device/state/${id}`,
+      url: `http://192.168.1.7:5000/api/device/state/${id}`,
       headers: { Authorization: `Bearer ${token}` }
     });
     return res.data;
@@ -85,7 +85,7 @@ export const changeMode = async(token,id,formValue) => {
     const res = await axios({
       method: "post",
       data: formValue,
-      url: `http://172.27.221.89:5000/api/device/mode/${id}`,
+      url: `http://192.168.1.7:5000/api/device/mode/${id}`,
       headers: { Authorization: `Bearer ${token}` }
     });
     return res.data;

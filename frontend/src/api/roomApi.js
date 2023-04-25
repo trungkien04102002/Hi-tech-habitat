@@ -4,7 +4,7 @@ export const getRoom = async(token) => {
   try {
     const res = await axios({
       method: "get",
-      url: "http://172.27.221.89:5000/api/room",
+      url: "http://192.168.1.7:5000/api/room",
       headers: { Authorization: `Bearer ${token}` }
     });
     return res.data;
@@ -17,7 +17,7 @@ export const getRoomDetail = async(token,id) => {
   try {
     const res = await axios({
       method: "get",
-      url: `http://172.27.221.89:5000/api/room/${id}`,
+      url: `http://192.168.1.7:5000/api/room/${id}`,
       headers: { Authorization: `Bearer ${token}` }
     });
     return res.data;
@@ -35,7 +35,7 @@ export const updateRoom = async(token,id,formValue) => {
     const res = await axios({
       method: "patch",
       data: formValue,
-      url: `http://172.27.221.89:5000/api/room/${id}`,
+      url: `http://192.168.1.7:5000/api/room/${id}`,
       headers: { Authorization: `Bearer ${token}` }
     });
     return res.data;
@@ -48,7 +48,7 @@ export const deleteRoom = async(token,id) => {
   try {
     const res = await axios({
       method: "delete",
-      url: `http://172.27.221.89:5000/api/room/${id}`,
+      url: `http://192.168.1.7:5000/api/room/${id}`,
       headers: { Authorization: `Bearer ${token}` }
     });
     return res.data;
@@ -65,7 +65,7 @@ export const addRoom = async(token,formValue) => {
     const res = await axios({
       method: "post",
       data: formValue,
-      url: `http://172.27.221.89:5000/api/room`,
+      url: `http://192.168.1.7:5000/api/room`,
       headers: { Authorization: `Bearer ${token}` }
     });
     return res.data;
