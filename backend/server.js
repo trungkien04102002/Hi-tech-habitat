@@ -75,7 +75,8 @@ client.on('message', async function(topic, message) {
     console.log('Received message:', message.toString());
     global.io.in(topic.toString()).emit(topic.toString(), message.toString());
     let feed = topic.toString().substring(`${process.env.ADA_USERNAME}/feeds/`.length)
-    await Device.updateMany({ feed }, {
+    let stateFeed = feed
+    await Device.updateMany({ stateFeed }, {
         $push: {
             deviceRecord: {
                 state: Number(message),
