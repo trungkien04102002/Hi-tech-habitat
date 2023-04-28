@@ -1,10 +1,11 @@
 import React from 'react';
-import {View, Text, Image, ScrollView, Pressable} from 'react-native';
+import {View, ScrollView, Text} from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { useState, useEffect } from 'react';
 import BackGround from '../components/background';
 import Footer from '../components/footer';
 import Header from '../components/header';
+import { LineChart } from 'react-native-chart-kit';
 
 import light from '../img/light.png';
 import temperature from '../img/temperature.png';
@@ -12,29 +13,70 @@ import temperature from '../img/temperature.png';
 import styles from '../style'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { getRoom } from '../api/roomApi';
+import { getStatistic } from '../api/statistic';
+
 const Statistic = () => {
   const [name, setName] = useState(null)
+  
+  const [openTime, setOpenTime] = useState(false);
+  const [valueTime, setValueTime] = useState('day');
+  const [itemsTime, setItemsTime] = useState([
+    {label: 'day', value: 'day'},
+    {label: 'month', value: 'month'}
+  ]);
+  
+  const [openRoom, setOpenRoom] = useState(false);
+  const [valueRoom, setValueRoom] = useState('');
+  const [itemsRoom, setItemsRoom] = useState([]);
+
+  const [dataStt, setDataStt] = useState([])
+
   useEffect(() => {
     (async () => {
       setName(await AsyncStorage.getItem('name'))
+      const token = await AsyncStorage.getItem('user')
+      const Rooms = await getRoom(token)
+      setItemsRoom(
+        Rooms.map((item) => ({
+          label: item.name,
+          value: item._id
+        })  
+      ))
     })()
   }, [])
 
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState('1 month');
-  const [items, setItems] = useState([
-    {label: '1 Month', value: '1 month'},
-    {label: '6 Months', value: '6 months'},
-    {label: '1 year', value: '1 year'},
-  ]);
+  useEffect(() => {
+    (async () => {
+      const token = await AsyncStorage.getItem('user')
+      const res = await getStatistic(token, valueRoom, valueTime)
+      if (res === undefined || !res.length)
+        return
 
-  const [open1, setOpen1] = useState(false);
-  const [value1, setValue1] = useState('living room');
-  const [items1, setItems1] = useState([
-    {label: 'Living room', value: 'living room'},
-    {label: 'Bed room', value: 'bed room'},
-    {label: 'Studio', value: 'studio'},
-  ]);
+      if (res){
+        setDataStt(
+          res.map((item) => (
+            {
+              datasets: [
+                {
+                  data: item.records.map(x => x.value),
+                  color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                }
+              ],
+              feed: item.feed
+            }
+          ))
+        )
+      }
+    })()
+  }, [valueTime, valueRoom])
+
+  const chartConfig = {
+    backgroundGradientFrom: '#9CF3FF',
+    backgroundGradientTo: '#19BFF5',
+    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    useShadowColorFromDataset: false
+  };
 
     return (
       <BackGround>
@@ -46,38 +88,52 @@ const Statistic = () => {
               <View className="flex flex-row gap-x-10 px-2 pt-6 z-10">
                 <View className="w-2/5">
                   <DropDownPicker
-                    open={open1}
-                    value={value1}
-                    items={items1}
-                    setOpen={setOpen1}
-                    setValue={setValue1}
-                    setItems={setItems1}
+                    open={openRoom}
+                    value={valueRoom}
+                    items={itemsRoom}
+                    setOpen={setOpenRoom}
+                    setValue={setValueRoom}
+                    setItems={setItemsRoom}
                     className="rounded-3xl border border-blue-500"
                   />
                 </View>
 
                 <View className="w-2/5">
                   <DropDownPicker
-                    open={open}
-                    value={value}
-                    items={items}
-                    setOpen={setOpen}
-                    setValue={setValue}
-                    setItems={setItems}
+                    open={openTime}
+                    value={valueTime}
+                    items={itemsTime}
+                    setOpen={setOpenTime}
+                    setValue={setValueTime}
+                    setItems={setItemsTime}
                     className="rounded-3xl border border-blue-500"
                   />
                 </View>
 
               </View>
 
-              <Image source={temperature} className="w-full my-4"></Image>
-              <Image source={light} className="w-full my-4"></Image>
+              <ScrollView className="mt-4 gap-y-4">
+              {
+                dataStt.map((item, index) => (
+                  <View key={index} className='flex justify-between'>
+                    <LineChart
+                      data={item}
+                      width={400}
+                      height={220}
+                      chartConfig={chartConfig}
+                      bezier
+                    />
+                    <Text className='text-[#333] font-medium text-base pb-2'>{item.feed}</Text>
+                  </View>
+                ))
+              }
+              </ScrollView>
 
-              <Pressable 
+              {/* <Pressable 
                   style={styles.shadow} 
                   className="bg-[#4682B4] rounded-2xl items-center px-8 py-4 mt-6">
                   <Text className="text-xl font-bold text-white">Generate report</Text>
-              </Pressable>
+              </Pressable> */}
           </View>
         
           {/* <Footer/>  */}

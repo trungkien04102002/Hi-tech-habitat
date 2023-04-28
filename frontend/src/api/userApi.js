@@ -1,5 +1,6 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {ip} from './ip'
 
 export const signIn = async(formValue) => {
   if( formValue.email==='' && formValue.password==='')
@@ -9,7 +10,7 @@ export const signIn = async(formValue) => {
     // make axios post request
     const res = await axios({
       method: "post",
-      url: "http://192.168.1.7:5000/api/user/auth",
+      url: `http://192.168.1.11:5000/api/user/auth`,
       data: formValue,
       headers: { 
           Accept: 'application/json',
@@ -36,7 +37,7 @@ export const signUp = async(formValue) => {
     // make axios post request
     const res = await axios({
       method: "post",
-      url: "http://192.168.1.7:5000/api/user/register",
+      url: `http://192.168.1.11:5000/api/user/register`,
       data: formValue,
       headers: { 
           Accept: 'application/json',

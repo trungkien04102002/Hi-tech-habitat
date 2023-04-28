@@ -5,6 +5,7 @@ import { BlurView } from 'expo-blur';
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
+import { socket } from '../api/socket'
 
 import BackGround from '../components/background';
 
