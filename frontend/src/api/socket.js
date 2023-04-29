@@ -1,8 +1,8 @@
 import {Client} from 'react-native-mqtt';
-
+import { ip } from './ip';
 export const socket = (token, roomID) => {
     const options = {
-        host: 'http://192.168.1.8',
+        host: `http://${ip}`,
         port: 5000,
         protocol: 'mqtts',
         username: 'bachkhoa',

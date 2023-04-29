@@ -1,10 +1,5 @@
 import axios from 'axios';
-<<<<<<< HEAD
 import {ip} from '../api/ip'
-=======
-import ip from './ip'
-
->>>>>>> 63302b944bda2e8626d154fd87e2adb7e97a623f
 export const getSensor = async(token, id) => {
   try {
     const res = await axios({
