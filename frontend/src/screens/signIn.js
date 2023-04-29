@@ -91,7 +91,7 @@ const SignIn = ({ navigation }) => {
                 >
                     <Text className="font-black text-2xl pt-4 pb-2">Sign In</Text>
                     <TextInput onChange={event => handleChange(event,'email')} className="py-2.5 rounded-xl border w-3/4 px-4 bg-white border-white" placeholder="Enter email" style={styles.shadow}></TextInput>
-                    <TextInput onChange={event => handleChange(event,'password')} className="py-2.5 rounded-xl border w-3/4 px-4 bg-white border-white mb-4" placeholder="Enter password" style={styles.shadow}></TextInput>
+                    <TextInput onChange={event => handleChange(event,'password')} className="py-2.5 rounded-xl border w-3/4 px-4 bg-white border-white mb-4" placeholder="Enter password" style={styles.shadow} secureTextEntry={true}></TextInput>
                     <TouchableOpacity onPress={() => setState(!state)} className="mb-4 px-8 py-3 bg-[#4682B4] rounded-md w-3/4 " style={styles.shadow}>
                         <Text component={Text} className="font-bold text-white text-xl text-center">Login</Text>
                     </TouchableOpacity>

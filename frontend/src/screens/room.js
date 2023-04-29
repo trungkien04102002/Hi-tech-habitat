@@ -152,6 +152,7 @@ const Room = ({ route }) => {
         ...formAddValue,
         [name]: event.nativeEvent.text,
     });
+
     if (name === 'type') {
       if (event.nativeEvent.text === 'Fan') {
         setformAddValue({
