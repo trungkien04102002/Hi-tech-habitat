@@ -201,7 +201,7 @@ class DeviceController {
         });
         request.write(postData);
         request.end();
-        res.status(200).json({ msg: `Light turned ${Number(on) == 1 ? 'on' : 'off'}` });
+        res.status(200).json({ msg: `State turned ${Number(on) == 1 ? 'on' : 'off'}` });
     })
 
     // [ POST - ROUTE: api/device/mode/:id ] 
@@ -250,7 +250,7 @@ class DeviceController {
         });
         request.write(postData);
         request.end();
-        res.status(200).json({ msg: `Automation turned ${Number(on) == 1 ? 'on' : 'off'}` });
+        res.status(200).json({ msg: `Automation turned ${Number(on) == 0 ? 'on' : 'off'}` });
     })
 }
 
