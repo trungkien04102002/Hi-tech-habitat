@@ -264,7 +264,7 @@ const Home = () => {
                                 >
                                     <Image source={genImg()}></Image>
                                     <Text className='text-[#3D3D3D] font-bold text-lg py-2'>{item.name}</Text>
-                                    <Text className='text-[#7D7D7D] pb-2'>{(listDS? listDS[item._id].length: 0) + ' devices'} </Text>
+                                    <Text className='text-[#7D7D7D] pb-2'>{(listDS && listDS[item._id]? listDS[item._id].length: 0) + ' devices'} </Text>
                                     <Text className='text-[#7D7D7D] pb-8'>Temperature: 20 °C</Text>
                                 </Pressable>
                             ))}

@@ -5,6 +5,7 @@ import { BlurView } from 'expo-blur';
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
+import { socket } from '../api/socket'
 
 import BackGround from '../components/background';
 
@@ -59,7 +60,7 @@ const Room = ({ route }) => {
     (async () => {
       const token = await AsyncStorage.getItem('user')
       for (_id in switchState2) {
-        const res = await changeMode(token, _id, {'on': switchState2[_id]? '1':'0'})
+        const res = await changeMode(token, _id, {'on': switchState2[_id]? '0':'1'})
       }
     })()
   }, [switchState2])
@@ -729,20 +730,20 @@ const Room = ({ route }) => {
                                   <Text className='text-[#414141] font-normal opacity-60 text-sm'>Auto</Text>
                                   <Switch
                                     trackColor={{ false: '#767577', true: '#81b0ff' }}
-                                    thumbColor={switchState[item._id] ? '#f5dd4b' : '#f4f3f4'}
+                                    thumbColor={switchState2[item._id] ? '#f5dd4b' : '#f4f3f4'}
                                     ios_backgroundColor="#3e3e3e"
-                                    onValueChange={() => setSwitchState({ ...switchState, [item._id]: !switchState[item._id]})}
-                                    value={switchState[item._id]}
+                                    onValueChange={() => setSwitchState2({ ...switchState2, [item._id]: !switchState2[item._id]})}
+                                    value={switchState2[item._id]}
                                   />
                                 </View>
                                 <View className='flex flex-row items-center justify-between'>
                                   <Text className='text-[#414141] font-normal opacity-60 text-sm'>On/Off</Text>
                                   <Switch
                                     trackColor={{ false: '#767577', true: '#81b0ff' }}
-                                    thumbColor={switchState2[item._id] ? '#f5dd4b' : '#f4f3f4'}
+                                    thumbColor={switchState[item._id] ? '#f5dd4b' : '#f4f3f4'}
                                     ios_backgroundColor="#3e3e3e"
-                                    onValueChange={() => setSwitchState2({ ...switchState2, [item._id]: !switchState2[item._id]})}
-                                    value={switchState2[item._id]}
+                                    onValueChange={() => setSwitchState({ ...switchState, [item._id]: !switchState[item._id]})}
+                                    value={switchState[item._id]}
                                   />
                                 </View>
                               </View>

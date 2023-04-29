@@ -1,10 +1,11 @@
 import axios from 'axios';
+import ip from './ip'
 
 export const getSensor = async(token, id) => {
   try {
     const res = await axios({
       method: "get",
-      url: `http://172.27.221.89:5000/api/sensor/${id}`,
+      url: `http://192.168.1.11:5000/api/sensor/${id}`,
       headers: { Authorization: `Bearer ${token}` }
     });
     return res.data;
@@ -21,7 +22,7 @@ export const addSensor = async(token,formValue,id) => {
     const res = await axios({
       method: "post",
       data: formValue,
-      url: `http://172.27.221.89:5000/api/sensor/${id}`,
+      url: `http://192.168.1.11:5000/api/sensor/${id}`,
       headers: { Authorization: `Bearer ${token}` }
     });
     return res.data;
@@ -34,7 +35,7 @@ export const deleteSensor = async(token,id) => {
   try {
     const res = await axios({
       method: "delete",
-      url: `http://172.27.221.89:5000/api/sensor/${id}`,
+      url: `http://192.168.1.11:5000/api/sensor/${id}`,
       headers: { Authorization: `Bearer ${token}` }
     });
     return res.data;
@@ -51,7 +52,7 @@ export const updateSensor = async(token,id,formValue) => {
     const res = await axios({
       method: "patch",
       data: formValue,
-      url: `http://172.27.221.89:5000/api/sensor/${id}`,
+      url: `http://192.168.1.11:5000/api/sensor/${id}`,
       headers: { Authorization: `Bearer ${token}` }
     });
     return res.data;
