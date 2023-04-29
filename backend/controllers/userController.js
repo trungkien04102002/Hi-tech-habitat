@@ -80,20 +80,21 @@ class UserController {
     updateUser = asyncHandler(async(req, res) => {
         var user = await User.findById(req.user._id);
         if (user) {
+            var hashPassword;
             if (req.body.password) {
                 var salt = await bcrypt.genSalt(10);
-                var hashPassword = await bcrypt.hash(req.body.password, salt);
-                user.password = hashPassword;
+                hashPassword = await bcrypt.hash(req.body.password, salt);
             }
             var updateUser = await User.findOneAndUpdate({ _id: user._id }, {
                 name: req.body.name || user.name,
                 email: req.body.email || user.email,
                 contact: req.body.contact || user.contact,
-                password: hashPassword,
+                password: hashPassword || user.password,
                 token: generateToken(user._id),
             }, {
                 new: true
-            });
+            }).lean();
+            delete updateUser.password
             res.json(updateUser);
         } else {
             res.status(404);
