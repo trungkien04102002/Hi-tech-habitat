@@ -1,11 +1,11 @@
 import {View, Text, Image, ScrollView, Modal, Pressable, TextInput, ImageBackground, TouchableOpacity, Switch} from 'react-native';
 import { StyledComponent } from "nativewind";
-import React, { useState,useEffect } from 'react';
+import React, { useState,useEffect,useRef } from 'react';
 import { BlurView } from 'expo-blur';
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
-import { socket } from '../api/socket'
+// import { socket } from '../api/socket'
 
 import BackGround from '../components/background';
 
@@ -28,8 +28,11 @@ import { getRoomDetail, deleteRoom, updateRoom } from '../api/roomApi';
 import { addDevice, getDevice, deleteDevice, updateDevice, changeMode, changeState } from '../api/deviceApi';
 import { addSensor, getSensor, deleteSensor, updateSensor } from '../api/sensorApi'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import io from "socket.io-client";
+import {ip} from '../api/ip'
 
 const Room = ({ route }) => {
+  var socket = useRef();
   const [name, setName] = useState('')
   const [Rooms, setRooms] = useState({
     room: {name: ''},
@@ -45,14 +48,13 @@ const Room = ({ route }) => {
 
   const [switchState, setSwitchState] = useState({});
   const [switchState2, setSwitchState2] = useState({});
-
+  const [sensorData, setSensorData] = useState({"temperature":undefined, "light":undefined});
   useEffect (() => {
     (async () => {
       const token = await AsyncStorage.getItem('user')
       for (_id in switchState) {
         const res = await changeState(token, _id, {'on': switchState[_id]? '1':'0'})
       }
-      console.log(switchState)
     })()
   }, [switchState])
 
@@ -74,19 +76,57 @@ const Room = ({ route }) => {
       
       listDevices = {}
       listSensors = {}
+      const client = io(`http://${ip}:5000`,{
+        extraHeaders: {roomID: id,token: token},
+        transports: [ 'websocket' ],
+        path: "/socket.io/socket.io.js"
+      });  
       for (item of res.roomDevices) {
         const dvdetail = await getDevice(token,item._id)
         listDevices[item._id] = dvdetail.stateFeed
         setSwitchState({ ...switchState, [item._id]: false})
         setSwitchState2({ ...switchState2, [item._id]: false})
       }
-      for (item of res.roomSensors) {
-        const ssdetail = await getSensor(token,item._id)
-        listSensors[item._id] = ssdetail.feed
-      }
+      client.on('connect', async () => {
+
+          for (item of res.roomSensors) {
+            const ssdetail = await getSensor(token,item._id)
+                  if (ssdetail.type == "temperature"){
+
+                      if (ssdetail.sensorRecord.length!=0 ){
+                          setSensorData((state)=>{
+                            return {...state,temperature:ssdetail.sensorRecord.at(-1).value}
+                          })                     
+                      }
+                      client.on(`bachkhoa/feeds/`+ ssdetail.feed.toLowerCase(), (data) => {
+                          setSensorData((state)=>{
+                              return {...state,temperature:data}
+                          })
+                      });
+                  }
+                  if (ssdetail.type == "light"){
+                      if (ssdetail.sensorRecord.length!=0 ){
+                        setSensorData((state)=>{
+                          return {...state,light:ssdetail.sensorRecord.at(-1).value}
+                        })
+                      }
+                      client.on(`bachkhoa/feeds/`+ ssdetail.feed.toLowerCase(), (data) => {
+                          setSensorData((state)=>{
+                            return {...state,light:data}
+                          })
+                      });
+                  }
+                  listSensors[item._id] = ssdetail.feed
+          
+          }
+      })
+
       setListD(listDevices)
       setListS(listSensors)
-    })()
+      socket.current = client; 
+    })()        
+    return () => { socket.current.disconnect() }
+
   }, [loadRoom])
 
   const deleteRoomHandle = async (id) => {
@@ -188,8 +228,15 @@ const Room = ({ route }) => {
       else if (event.nativeEvent.text === 'humi') {
         setformAddSensorValue({
           ...formAddSensorValue,
-          ['unit']: 'cd',
+          ['unit']: '%',
           ['feed']: 'humi'
+        });
+      }
+      else if (event.nativeEvent.text === 'light') {
+        setformAddSensorValue({
+          ...formAddSensorValue,
+          ['unit']: 'cd',
+          ['feed']: 'light'
         });
       }
     }
@@ -239,7 +286,6 @@ const Room = ({ route }) => {
 
   useEffect(()=>{
     (async () => {
-        // console.log(formAddSensorValue)
         const token = await AsyncStorage.getItem('user')
         const res = await addSensor(token, formAddSensorValue, id); 
         
@@ -408,7 +454,7 @@ const Room = ({ route }) => {
                     <Image source={temperatureImg}></Image>
                   </View>
                   <View className='bg-white rounded-b-xl items-center my-auto py-4'>
-                    <Text className='text-[#414141] text-xl font-medium'>{20} °C</Text>
+                    <Text className='text-[#414141] text-xl font-medium'>{sensorData.temperature != undefined?sensorData.temperature:"NA"} °C</Text>
                   </View>
                 </View>
 
@@ -418,7 +464,7 @@ const Room = ({ route }) => {
                     <Image source={intensityImg}></Image>
                   </View>
                   <View className='bg-white rounded-b-xl items-center my-auto py-4'>
-                    <Text className='text-[#414141] text-xl font-medium'>{5} cd</Text>
+                    <Text className='text-[#414141] text-xl font-medium'>{sensorData.light != undefined?sensorData.light:"NA"} cd</Text>
                   </View>
                 </View>
 
