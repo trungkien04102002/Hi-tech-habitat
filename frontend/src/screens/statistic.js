@@ -52,7 +52,6 @@ const Statistic = () => {
       const res = await getStatistic(token, valueRoom, valueTime)
       if (res === undefined || !res.length)
         return
-
       if (res){
         setDataStt(
           res.map((item) => (
