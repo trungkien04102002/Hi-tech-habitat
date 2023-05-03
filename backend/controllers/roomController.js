@@ -24,8 +24,8 @@ class RoomController {
             throw new Error("Room does not exist!")
         } else {
             if (room.user == req.user._id) {
-                var roomSensors = await Sensor.find({ room: new mongoose.Types.ObjectId(room.id) }, 'type sensorRecord')
-                var roomDevices = await Device.find({ room: new mongoose.Types.ObjectId(room.id) }, 'name deviceRecord')
+                var roomSensors = await Sensor.find({ room: new mongoose.Types.ObjectId(room.id) }, 'type sensorRecord feed')
+                var roomDevices = await Device.find({ room: new mongoose.Types.ObjectId(room.id) }, 'name deviceRecord stateFeed modeFeed')
 
                 var numOfDevices = Object.keys(roomDevices).length
                 for (var i = 0; i < numOfDevices; i++) {
@@ -44,7 +44,6 @@ class RoomController {
                         roomSensors[i].sensorRecord = result
                     }
                 }
-
                 res.json({
                     room,
                     roomSensors,

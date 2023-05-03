@@ -73,7 +73,6 @@ const Room = ({ route }) => {
       const token = await AsyncStorage.getItem('user')
       const res = await getRoomDetail(token, id)
       setRooms(res)
-      
       listDevices = {}
       listSensors = {}
       const client = io(`http://${ip}:5000`,{
@@ -82,45 +81,46 @@ const Room = ({ route }) => {
         path: "/socket.io/socket.io.js"
       });  
       for (item of res.roomDevices) {
-        const dvdetail = await getDevice(token,item._id)
-        listDevices[item._id] = dvdetail.stateFeed
-        setSwitchState({ ...switchState, [item._id]: false})
-        setSwitchState2({ ...switchState2, [item._id]: false})
+        listDevices[item._id] = item.stateFeed
+        setSwitchState((oldState)=>{
+            return { ...oldState, [item._id]: item.deviceRecord.at(-1)==1?true:false}
+        })
+        setSwitchState2((oldState)=>{
+            return { ...oldState, [item._id]: false}
+        })
       }
-      client.on('connect', async () => {
-
+      client.on('connect', async () => {          
           for (item of res.roomSensors) {
-            const ssdetail = await getSensor(token,item._id)
-                  if (ssdetail.type == "temperature"){
+                  if (item.type == "temperature"){
 
-                      if (ssdetail.sensorRecord.length!=0 ){
+                      if (item.sensorRecord.length!=0 ){
                           setSensorData((state)=>{
-                            return {...state,temperature:ssdetail.sensorRecord.at(-1).value}
+                            return {...state,temperature:item.sensorRecord.at(-1).value}
                           })                     
                       }
-                      client.on(`bachkhoa/feeds/`+ ssdetail.feed.toLowerCase(), (data) => {
+                      client.on(`bachkhoa/feeds/`+ item.feed.toLowerCase(), (data) => {
                           setSensorData((state)=>{
                               return {...state,temperature:data}
                           })
                       });
                   }
-                  if (ssdetail.type == "light"){
-                      if (ssdetail.sensorRecord.length!=0 ){
+                  if (item.type == "light"){
+                      if (item.sensorRecord.length!=0 ){
                         setSensorData((state)=>{
-                          return {...state,light:ssdetail.sensorRecord.at(-1).value}
+                          return {...state,light:item.sensorRecord.at(-1).value}
                         })
                       }
-                      client.on(`bachkhoa/feeds/`+ ssdetail.feed.toLowerCase(), (data) => {
+                      client.on(`bachkhoa/feeds/`+ item.feed.toLowerCase(), (data) => {
                           setSensorData((state)=>{
                             return {...state,light:data}
                           })
                       });
                   }
-                  listSensors[item._id] = ssdetail.feed
+                  listSensors[item._id] = item.feed
           
           }
       })
-
+      
       setListD(listDevices)
       setListS(listSensors)
       socket.current = client; 
@@ -269,6 +269,7 @@ const Room = ({ route }) => {
         const res = await addDevice(token, formAddValue, id); 
         
         if (res && res.message) {
+          setModalVisibleAdd(!modalVisibleAdd)
           Toast.show({
             type: 'error',
             text1: 'Add devices Failed',
@@ -288,8 +289,9 @@ const Room = ({ route }) => {
     (async () => {
         const token = await AsyncStorage.getItem('user')
         const res = await addSensor(token, formAddSensorValue, id); 
-        
+        // console.log(res);
         if (res && res.message) {
+          setModalVisibleAddSensor(!modalVisibleAddSensor)
           Toast.show({
             type: 'error',
             text1: 'Add sensors Failed',
@@ -779,7 +781,9 @@ const Room = ({ route }) => {
                                     trackColor={{ false: '#767577', true: '#81b0ff' }}
                                     thumbColor={switchState2[item._id] ? '#f5dd4b' : '#f4f3f4'}
                                     ios_backgroundColor="#3e3e3e"
-                                    onValueChange={() => setSwitchState2({ ...switchState2, [item._id]: !switchState2[item._id]})}
+                                    onValueChange={() => setSwitchState2((oldState)=>{
+                                                                              return { ...oldState, [item._id]: !oldState[item._id]}
+                                                                        })}
                                     value={switchState2[item._id]}
                                   />
                                 </View>

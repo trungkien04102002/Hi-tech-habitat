@@ -21,7 +21,7 @@ export const addDevice = async(token,formValue,id) => {
     const res = await axios({
       method: "post",
       data: formValue,
-      url: `http://${ip}:5000/api/device/${id}`,
+      url: `http://${ip}:5000/api/device/`,
       headers: { Authorization: `Bearer ${token}` }
     });
     return res.data;

@@ -41,9 +41,9 @@ class SensorController {
             throw new Error("You don't have permit to add sensor in this rooms!")
         }
         const { type, unit, feed } = req.body;
-        const allowedFeeds = ['humi', 'temperature']
+        const allowedFeeds = ['humi', 'temperature','light']
         if (!allowedFeeds.includes(req.body.feed)) {
-            return res.status(400).send({ error: 'Feed of sensor must be humi or temperature!' })
+            throw new Error("Feed is not valid")
         }
 
         const sensorCheck = await Sensor.findOne({

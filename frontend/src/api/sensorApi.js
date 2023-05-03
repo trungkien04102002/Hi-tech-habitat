@@ -24,6 +24,7 @@ export const addSensor = async(token,formValue,id) => {
       url: `http://${ip}:5000/api/sensor/${id}`,
       headers: { Authorization: `Bearer ${token}` }
     });
+
     return res.data;
   } catch(error) {
       return error.response.data;
